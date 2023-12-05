@@ -1,0 +1,48 @@
+/* Fügen Sie diese Stile für klickbare und deaktivierte Tage hinzu */
+td.clickable {
+    background-color: #f0f0f0; /* Hellgraue Hintergrundfarbe für klickbare Tage */
+}
+
+td.disabled {
+    background-color: #dddddd; /* Dunkelgraue Hintergrundfarbe für deaktivierte Tage */
+}
+
+/* Geänderte Stile für Hintergrundfarbe und Textfarbe */
+th.calendar-header {
+    background-color: #0d6efd; /* Blaue Hintergrundfarbe für den Kopfzeilen */
+    color: #000000; /* Schwarze Textfarbe für den Kopfzeilen */
+}
+
+td.clickable, td.disabled {
+    background-color: #f0f0f0; /* Blaue Hintergrundfarbe für klickbare und deaktivierte Tage */
+    color: #000000; /* Schwarze Textfarbe für klickbare und deaktivierte Tage */
+}
+
+/* Geänderte Stile für Größe und Layout-Unterschiede */
+.btn-time-type {
+    font-size: 1.2em;
+    width: 48%; /* Kleinere Breite für die "Vormittag" und "Nachmittag" Schaltflächen */
+    margin: 0.5%; /* Kleinerer Außenrand zwischen den Schaltflächen */
+}
+
+#timeSlotsContainer {
+    max-height: 60vh; /* Kleinere maximale Höhe für die "Freie Termine" Schaltflächen */
+    overflow-y: auto; /* Scrollleiste hinzufügen, wenn der Inhalt zu groß für die angegebene Größe ist */
+}
+
+/* Zusätzliche Anpassung für die Zentrierung */
+.text-center {
+    text-align: center;
+}
+
+/* Geänderte Stile für Größe und Layout-Unterschiede */
+.btn-time-type {
+    font-size: 1.2em;
+    width: 48%; /* Kleinere Breite für die "Vormittag" und "Nachmittag" Schaltflächen */
+    margin: 0.5%; /* Kleinerer Außenrand zwischen den Schaltflächen */
+}
+
+#timeSlotsContainer {
+    max-height: 60vh; /* Kleinere maximale Höhe für die "Freie Termine" Schaltflächen */
+    overflow-y: auto; /* Scrollleiste hinzufügen, wenn der Inhalt zu groß für die angegebene Größe ist */
+}
