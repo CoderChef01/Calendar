@@ -1,20 +1,43 @@
 let currentDate = new Date();
+const CONSTANTS = {
+    offsets: {
+        min: 1,
+        max: 1
+    },
+    now: new Date()
+}
+
+/**
+ * moveDateByMonth
+ * @param {number} offset
+ */
+function moveDateByMonth (offset) {
+    const newMonth = currentDate.getMonth() + (offset || 0);
+    const calcMonth = newMonth < 0 ? 12 + newMonth : newMonth > 12 ? newMonth - 12 : newMonth;
+
+    if (CONSTANTS.now.getMonth() - CONSTANTS.offsets.min <= calcMonth &&
+        calcMonth <= CONSTANTS.now.getMonth() + CONSTANTS.offsets.max) {
+        currentDate.setMonth(newMonth);
+    }
+}
 
 jQuery(document).ready(function($) {
     updateCalendar();
 
     $("#prevMonthBtn").on("click", function () {
-        updateCalendar(-1);
+        moveDateByMonth(-1);
+        updateCalendar();
     });
     
     $("#nextMonthBtn").on("click", function () {
-        updateCalendar(1);
+        moveDateByMonth(1);
+        updateCalendar();
     });
     
 });
 
-function updateCalendar(monthOffset) {
-    let currentMonth = currentDate.getMonth() + 1 + (monthOffset || 0);
+function updateCalendar() {
+    let currentMonth = currentDate.getMonth() + 1;
     let currentYear = currentDate.getFullYear();
 
     if (currentMonth > 12) {
