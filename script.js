@@ -1,20 +1,44 @@
+let currentDate = new Date();
+const CONSTANTS = {
+    offsets: {
+        min: 1,
+        max: 1
+    },
+    now: new Date()
+}
+
+/**
+ * moveDateByMonth
+ * @param {number} offset
+ */
+function moveDateByMonth (offset) {
+    const newMonth = currentDate.getMonth() + (offset || 0);
+    const calcMonth = newMonth < 0 ? 12 + newMonth : newMonth > 12 ? newMonth - 12 : newMonth;
+
+    if (CONSTANTS.now.getMonth() - CONSTANTS.offsets.min <= calcMonth &&
+        calcMonth <= CONSTANTS.now.getMonth() + CONSTANTS.offsets.max) {
+        currentDate.setMonth(newMonth);
+    }
+}
+
 jQuery(document).ready(function($) {
     updateCalendar();
 
     $("#prevMonthBtn").on("click", function () {
-        updateCalendar(-1);
+        moveDateByMonth(-1);
+        updateCalendar();
     });
     
     $("#nextMonthBtn").on("click", function () {
-        updateCalendar(1);
+        moveDateByMonth(1);
+        updateCalendar();
     });
     
 });
 
-function updateCalendar(monthOffset) {
-    var currentDate = new Date();
-    var currentMonth = currentDate.getMonth() + 1 + (monthOffset || 0);
-    var currentYear = currentDate.getFullYear();
+function updateCalendar() {
+    let currentMonth = currentDate.getMonth() + 1;
+    let currentYear = currentDate.getFullYear();
 
     if (currentMonth > 12) {
         currentMonth = 1;
@@ -29,23 +53,89 @@ function updateCalendar(monthOffset) {
     populateCalendarDays(currentYear, currentMonth);
 }
 
+function populateBTCalendar(year, month) {
+    const calendar_content = document.querySelector('.calendar_content');
+    if(!calendar_content) {
+        return;
+    }
+    calendar_content.innerHTML = '';
+
+    let firstDay = new Date(year, month - 1, 1);
+    let lastDay = new Date(year, month, 0);
+    let numDays = lastDay.getDate();
+    let firstDayOfWeek = firstDay.getDay() || 7;
+    let currentDay = 1;
+    const now = new Date();
+    const today = now.getDate();
+
+    const createDiv = (className) => {
+        const div = document.createElement('div');
+        div.className = className;
+        return div;
+    };
+    for (let i = 0; i < 6; i++) {
+        for (let j = 1; j < 8; j++) {
+            if (i === 0 && j < firstDayOfWeek) {
+                calendar_content.appendChild(createDiv('blank'));
+            } else if(currentDay === today && month === now.getMonth() + 1) {
+                const todayDiv = createDiv('today');
+                todayDiv.style.color =  "rgb(0, 189, 170)"
+                todayDiv.innerHTML = currentDay.toString();
+                if (isDayClickable(year, month, currentDay)) {
+                    todayDiv.classList.add('clickable');
+                    todayDiv.onclick = ()=>{
+                        showTimeSlotsModal(currentDay);
+                    }
+                } else {
+                    todayDiv.classList.add('disabled');
+                }
+                calendar_content.appendChild(todayDiv);
+                currentDay++;
+            } else if(currentDay < today && month === now.getMonth() + 1) {
+                const todayDiv = createDiv('past-date');
+                todayDiv.innerHTML = currentDay.toString();
+
+                calendar_content.appendChild(todayDiv);
+                currentDay++;
+            } else if (currentDay <= numDays) {
+                const div = document.createElement('div');
+                div.innerHTML = currentDay.toString();
+
+                currentDay++;
+
+                if (isDayClickable(year, month, currentDay)) {
+                    div.classList.add('clickable');
+                    div.onclick = ()=>{
+                        showTimeSlotsModal(currentDay);
+                    }
+                } else {
+                    div.classList.add('disabled');
+                }
+                calendar_content.appendChild(div);
+
+            }
+        }
+    }
+}
 function populateCalendarDays(year, month) {
+    return populateBTCalendar(year, month);
+    /*
     $("#calendarBody").empty();
 
-    var firstDay = new Date(year, month - 1, 1);
-    var lastDay = new Date(year, month, 0);
-    var numDays = lastDay.getDate();
-    var firstDayOfWeek = firstDay.getDay();
-    var currentDay = 1;
+    let firstDay = new Date(year, month - 1, 1);
+    let lastDay = new Date(year, month, 0);
+    let numDays = lastDay.getDate();
+    let firstDayOfWeek = firstDay.getDay() || 7;
+    let currentDay = 1;
 
-    for (var i = 0; i < 6; i++) {
-        var row = $("<tr>").appendTo("#calendarBody");
+    for (let i = 0; i < 6; i++) {
+        let row = $("<tr>").appendTo("#calendarBody");
 
-        for (var j = 0; j < 7; j++) {
+        for (let j = 1; j < 8; j++) {
             if (i === 0 && j < firstDayOfWeek) {
                 row.append("<td></td>");
             } else if (currentDay <= numDays) {
-                var cell = $("<td>").text(currentDay).appendTo(row);
+                let cell = $("<td>").text(currentDay).appendTo(row);
                 currentDay++;
 
                 if (isDayClickable(year, month, currentDay)) {
@@ -57,40 +147,40 @@ function populateCalendarDays(year, month) {
                     cell.addClass("disabled");
                 }
             } else {
-                row.append("<td></td>");
+                //row.append("<td></td>");
             }
         }
-    }
+    }*/
 }
 
 function isDayClickable(year, month, day) {
-    var currentDay = new Date(year, month - 1, day);
-    var dayOfWeek = currentDay.getDay();
+    let currentDay = new Date(year, month - 1, day);
+    let dayOfWeek = currentDay.getDay();
     return dayOfWeek !== 0 && dayOfWeek !== 6;
 }
 
 function showTimeSlotsModal(day) {
     // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
     // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
-    var availableTimeSlotsDe = ["08:00", "08:15", "08:30", "08:45", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45"];
-    var availableTimeSlotsDu = ["13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "15:00", "15:15", "15:30", "15:45"];
+    let availableTimeSlotsDe = ["08:00", "08:15", "08:30", "08:45", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45"];
+    let availableTimeSlotsDu = ["13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "15:00", "15:15", "15:30", "15:45"];
 
     // Clear modal body
     $("#timeSlotsModal .modal-body").empty();
 
     // Fügen Sie Radio-Buttons für "de" und "du" hinzu
-    var deButton = $("<button>")
+    let deButton = $("<button>")
         .addClass("btn btn-primary m-2")
         .text("Vorm")
-        .css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
+        //.css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
         .on("click", function () {
             showAvailableTimeSlots("de", availableTimeSlotsDe);
         });
 
-    var duButton = $("<button>")
+    let duButton = $("<button>")
         .addClass("btn btn-primary m-2")
         .text("Nach")
-        .css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
+        //.css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
         .on("click", function () {
             showAvailableTimeSlots("du", availableTimeSlotsDu);
         });
@@ -99,18 +189,18 @@ function showTimeSlotsModal(day) {
     $("#timeSlotsModal .modal-body").append(deButton, duButton);
 
     // Fügen Sie den Titel zum Modal hinzu
-    var title = $("<h5>").addClass("modal-title text-center").text("Welcher Zeitraum passt Ihnen?");
+    let title = $("<h5>").addClass("modal-title text-center").text("Welcher Zeitraum passt Ihnen?");
     $("#timeSlotsModal .modal-body").append(title);
 
     // Erstellen Sie einen Container für die Zeitraumtyp-Buttons
-    var timeTypeContainer = $("<div>").addClass("d-flex justify-content-center");
+    let timeTypeContainer = $("<div>").addClass("d-flex justify-content-center buttons");
     $("#timeSlotsModal .modal-body").append(timeTypeContainer);
 
     // Fügen Sie "De" und "Du" Buttons zum Container hinzu
     timeTypeContainer.append(deButton, duButton);
 
     // Erstellen Sie einen Container für die Zeitfenster
-    var timeSlotsContainer = $("<div>").attr("id", "timeSlotsContainer");
+    let timeSlotsContainer = $("<div>").attr("id", "timeSlotsContainer");
     $("#timeSlotsModal .modal-body").append(timeSlotsContainer);
 
     // Zeigen Sie das Modal an
@@ -121,16 +211,16 @@ function showTimeSlotsModal(day) {
 
 function showAvailableTimeSlots(timeType, availableTimeSlots) {
     // Holen Sie sich den Container für die Zeitfenster
-    var timeSlotsContainer = $("#timeSlotsContainer");
+    let timeSlotsContainer = $("#timeSlotsContainer");
 
     // Leeren Sie den Container
     timeSlotsContainer.empty();
 
     // Zeigen Sie die gefilterten Zeitfenster an
-    var buttonsPerRow = 4; // Az egy sorban megjelenő gombok száma
-    for (var i = 0; i < availableTimeSlots.length; i++) {
-        var timeSlot = availableTimeSlots[i];
-        var button = $("<button>")
+    let buttonsPerRow = 4; // Az egy sorban megjelenő gombok száma
+    for (let i = 0; i < availableTimeSlots.length; i++) {
+        let timeSlot = availableTimeSlots[i];
+        let button = $("<button>")
              .addClass("btn btn-primary m-3") // vagy m-4
              .text(timeSlot)
              .on("click", function () {
@@ -147,11 +237,11 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     }
 
     // Fügen Sie eine leere div für den Abstand hinzu
-    var spacerDiv = $("<div>").css({ "height": "1em" });
+    let spacerDiv = $("<div>").css({ "height": "1em" });
     timeSlotsContainer.append(spacerDiv);
 
     // Fügen Sie den "Akzeptieren" Button hinzu
-    var acceptButton = $("<button>")
+    let acceptButton = $("<button>")
         .addClass("btn btn-secondary m-2")
         .text("Akzeptieren")
         .css({ "float": "right" })  // Rechtsausrichtung

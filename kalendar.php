@@ -1,48 +1,46 @@
+<?php
+?>
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender</title>
-    <link rel="stylesheet" href="../terminbuchungs/bootstrap-5.3.2-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../terminbuchungs/style.css">
-    <link rel="icon" href="http://www.noio.nl/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="http://www.noio.nl/favicon.ico" type="image/x-icon">
-    <script src="https://kit.fontawesome.com/27c1c24334.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./vendors/bootstrap-5.3.2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./vendors/fontawesome-free-5.15.4-web/css/all.min.css">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
 </head>
 
 <body>
 
     <main class="container">
-        <header>
-            <div class="container-fluid container-md">
-                <h2 class="mt-5 text-center text-primary">Kalender</h2>
-                <div class="m-2">
-                    <button class="btn" id="prevMonthBtn"><i class="fas fa-angle-double-left"></i></button>
-                    <span id="currentMonth"></span>
-                    <button class="btn" id="nextMonthBtn"><i class="fas fa-angle-double-right"></i></button>
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="mt-5 text-center text-primary head-title">Kalender</h2>
+
+                <div id="calendar_first" class="calendar calendar-first">
+                    <div class="calendar_header">
+                        <button id="prevMonthBtn" class="switch-month switch-left"> <i class="fa fa-chevron-left"></i></button>
+                        <h2 id="currentMonth"></h2>
+                        <button id="nextMonthBtn" class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar_weekdays">
+                        <div style="color: rgb(68, 68, 68);">Mo</div>
+                        <div style="color: rgb(68, 68, 68);">Di</div>
+                        <div style="color: rgb(68, 68, 68);">Mi</div>
+                        <div style="color: rgb(68, 68, 68);">Do</div>
+                        <div style="color: rgb(68, 68, 68);">Fr</div>
+                        <div style="color: rgb(68, 68, 68);">Sa</div>
+                        <div style="color: rgb(68, 68, 68);">So</div>
+                    </div>
+                    <div class="calendar_content">
+
+                    </div>
                 </div>
             </div>
-        </header>
-        <section class="container-fluid container-md">
-            <table class="table table-bordered">
-                <thead>
-                    <tr class="text-center">
-                        <th class="text" style="color: #FFFFFF; background-color: #0d6efd;">Mo</th>
-                        <th class="text" style="color: #FFFFFF; background-color: #0d6efd;">Di</th>
-                        <th class="text" style="color: #FFFFFF; background-color: #0d6efd;">Mi</th>
-                        <th class="text" style="color: #FFFFFF; background-color: #0d6efd;">Do</th>
-                        <th class="text" style="color: #FFFFFF; background-color: #0d6efd;">Fr</th>
-                        <th class="text-danger" style="background-color: #0d6efd;">Sa</th>
-                        <th class="text-danger" style="background-color: #0d6efd;">So</th>
-                    </tr>
-                </thead>
-                <tbody id="calendarBody">
-                    <!-- Kalender-Tage werden dynamisch hier hinzugefügt -->
-                </tbody>
-            </table>
-        </section>
+        </div>
     </main>
 
     <!-- Bootstrap Modal zum Anzeigen von Zeitfenstern -->
@@ -74,9 +72,9 @@
         </div>
     </div>
 
-    <script src="../terminbuchungs/js/jquery-3.7.1.min.js"></script>
-    <script src="../terminbuchungs/bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="./vendors/jquery/jquery-3.7.1.min.js"></script>
+    <script src="./vendors/bootstrap-5.3.2-dist/js/bootstrap.min.js"></script>
+    <script src="./script.js"></script>
 </body>
 
 </html>
