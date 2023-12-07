@@ -49,5 +49,24 @@ td.clickable, td.disabled {
 
 .modal-content {
     max-width: 80%; /* Változtasd meg az értéket igényeid szerint */
+    margin: 0 auto;
 }
 
+@media only screen and (max-width: 400px) {
+    .modal-content {
+        max-width: 100%;
+    }
+}
+@media only screen and (max-width: 230px) {
+    .modal-content .modal-body div:last-child{
+        flex-flow: column;
+    }
+}
+@media only screen and (max-width: 295px) {
+    .container{
+        padding: 0;
+    }
+    .container-fluid.container-md {
+        padding: 0;
+    }
+}

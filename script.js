@@ -82,7 +82,7 @@ function showTimeSlotsModal(day) {
     var deButton = $("<button>")
         .addClass("btn btn-primary m-2")
         .text("Vorm")
-        .css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
+        //.css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
         .on("click", function () {
             showAvailableTimeSlots("de", availableTimeSlotsDe);
         });
@@ -90,7 +90,7 @@ function showTimeSlotsModal(day) {
     var duButton = $("<button>")
         .addClass("btn btn-primary m-2")
         .text("Nach")
-        .css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
+        //.css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
         .on("click", function () {
             showAvailableTimeSlots("du", availableTimeSlotsDu);
         });

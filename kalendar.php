@@ -1,3 +1,5 @@
+<?php
+?>
 <!DOCTYPE html>
 <html lang="de">
 
@@ -5,8 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender</title>
-    <link rel="stylesheet" href="../terminbuchungs/bootstrap-5.3.2-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../terminbuchungs/style.css">
+    <link rel="stylesheet" href="./bootstrap-5.3.2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./style.css">
     <link rel="icon" href="http://www.noio.nl/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="http://www.noio.nl/favicon.ico" type="image/x-icon">
     <script src="https://kit.fontawesome.com/27c1c24334.js" crossorigin="anonymous"></script>
