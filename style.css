@@ -46,3 +46,8 @@ td.clickable, td.disabled {
     max-height: 60vh; /* Kleinere maximale Höhe für die "Freie Termine" Schaltflächen */
     overflow-y: auto; /* Scrollleiste hinzufügen, wenn der Inhalt zu groß für die angegebene Größe ist */
 }
+
+.modal-content {
+    max-width: 80%; /* Változtasd meg az értéket igényeid szerint */
+}
+

@@ -72,8 +72,8 @@ function isDayClickable(year, month, day) {
 function showTimeSlotsModal(day) {
     // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
     // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
-    var availableTimeSlotsDe = ["8:30", "9:30", "10:30", "11:30", "14:30", "15:30", "16:30", "17:30", "18:40", "19:30"];
-    var availableTimeSlotsDu = ["8:40", "9:40", "10:40", "11:40", "14:40", "15:40", "16:40", "17:40", "18:40", "19:40"];
+    var availableTimeSlotsDe = ["08:00", "08:15", "08:30", "08:45", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45"];
+    var availableTimeSlotsDu = ["13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "15:00", "15:15", "15:30", "15:45"];
 
     // Clear modal body
     $("#timeSlotsModal .modal-body").empty();
@@ -117,6 +117,8 @@ function showTimeSlotsModal(day) {
     $("#timeSlotsModal").modal("show");
 }
 
+
+
 function showAvailableTimeSlots(timeType, availableTimeSlots) {
     // Holen Sie sich den Container für die Zeitfenster
     var timeSlotsContainer = $("#timeSlotsContainer");
@@ -125,28 +127,34 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     timeSlotsContainer.empty();
 
     // Zeigen Sie die gefilterten Zeitfenster an
+    var buttonsPerRow = 4; // Az egy sorban megjelenő gombok száma
     for (var i = 0; i < availableTimeSlots.length; i++) {
         var timeSlot = availableTimeSlots[i];
         var button = $("<button>")
-            .addClass("btn btn-primary m-2")
-            .text(timeSlot)
-            .on("click", function () {
-                alert("Ausgewählter Zeitraum: " + $(this).text());
-            });
+             .addClass("btn btn-primary m-3") // vagy m-4
+             .text(timeSlot)
+             .on("click", function () {
+        alert("Ausgewählter Zeitraum: " + $(this).text());
+    });
 
         // Fügen Sie jeden Zeitfenster-Button dem Container hinzu
         timeSlotsContainer.append(button);
+
+        // Ha elértük a gombok számát a soron, akkor adjunk hozzá egy új sort
+        if ((i + 1) % buttonsPerRow === 0) {
+            timeSlotsContainer.append("<br>");
+        }
     }
 
     // Fügen Sie eine leere div für den Abstand hinzu
-    var spacerDiv = $("<div>").css({"height": "1em"});
+    var spacerDiv = $("<div>").css({ "height": "1em" });
     timeSlotsContainer.append(spacerDiv);
 
     // Fügen Sie den "Akzeptieren" Button hinzu
     var acceptButton = $("<button>")
         .addClass("btn btn-secondary m-2")
         .text("Akzeptieren")
-        .css({"float": "right"})  // Rechtsausrichtung
+        .css({ "float": "right" })  // Rechtsausrichtung
         .on("click", function () {
             alert("Akzeptiert");
         });
@@ -154,3 +162,5 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     // Fügen Sie den Akzeptieren Button dem Container hinzu
     timeSlotsContainer.append(acceptButton);
 }
+
+
