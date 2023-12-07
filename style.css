@@ -52,17 +52,17 @@ td.clickable, td.disabled {
     margin: 0 auto;
 }
 
-@media only screen and (max-width: 400px) {
+@media (max-width: 400px) {
     .modal-content {
         max-width: 100%;
     }
 }
-@media only screen and (max-width: 230px) {
-    .modal-content .modal-body div:last-child{
+@media (max-width: 230px) {
+    .modal-content .modal-body .buttons{
         flex-flow: column;
     }
 }
-@media only screen and (max-width: 295px) {
+@media (max-width: 295px) {
     .container{
         padding: 0;
     }

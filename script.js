@@ -127,7 +127,7 @@ function showTimeSlotsModal(day) {
     $("#timeSlotsModal .modal-body").append(title);
 
     // Erstellen Sie einen Container für die Zeitraumtyp-Buttons
-    let timeTypeContainer = $("<div>").addClass("d-flex justify-content-center");
+    let timeTypeContainer = $("<div>").addClass("d-flex justify-content-center buttons");
     $("#timeSlotsModal .modal-body").append(timeTypeContainer);
 
     // Fügen Sie "De" und "Du" Buttons zum Container hinzu
