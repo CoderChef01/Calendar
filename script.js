@@ -75,7 +75,6 @@ function populateBTCalendar(year, month) {
     };
     for (let i = 0; i < 6; i++) {
         for (let j = 1; j < 8; j++) {
-            console.log(currentDay, today, month === now.getMonth() + 1);
             if (i === 0 && j < firstDayOfWeek) {
                 calendar_content.appendChild(createDiv('blank'));
             } else if(currentDay === today && month === now.getMonth() + 1) {
@@ -119,7 +118,8 @@ function populateBTCalendar(year, month) {
     }
 }
 function populateCalendarDays(year, month) {
-    populateBTCalendar(year, month);
+    return populateBTCalendar(year, month);
+    /*
     $("#calendarBody").empty();
 
     let firstDay = new Date(year, month - 1, 1);
@@ -150,7 +150,7 @@ function populateCalendarDays(year, month) {
                 //row.append("<td></td>");
             }
         }
-    }
+    }*/
 }
 
 function isDayClickable(year, month, day) {
