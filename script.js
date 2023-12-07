@@ -53,7 +53,73 @@ function updateCalendar() {
     populateCalendarDays(currentYear, currentMonth);
 }
 
+function populateBTCalendar(year, month) {
+    const calendar_content = document.querySelector('.calendar_content');
+    if(!calendar_content) {
+        return;
+    }
+    calendar_content.innerHTML = '';
+
+    let firstDay = new Date(year, month - 1, 1);
+    let lastDay = new Date(year, month, 0);
+    let numDays = lastDay.getDate();
+    let firstDayOfWeek = firstDay.getDay() || 7;
+    let currentDay = 1;
+    const now = new Date();
+    const today = now.getDate();
+
+    const createDiv = (className) => {
+        const div = document.createElement('div');
+        div.className = className;
+        return div;
+    };
+    for (let i = 0; i < 6; i++) {
+        for (let j = 1; j < 8; j++) {
+            console.log(currentDay, today, month === now.getMonth() + 1);
+            if (i === 0 && j < firstDayOfWeek) {
+                calendar_content.appendChild(createDiv('blank'));
+            } else if(currentDay === today && month === now.getMonth() + 1) {
+                const todayDiv = createDiv('today');
+                todayDiv.style.color =  "rgb(0, 189, 170)"
+                todayDiv.innerHTML = currentDay.toString();
+                if (isDayClickable(year, month, currentDay)) {
+                    todayDiv.classList.add('clickable');
+                    todayDiv.onclick = ()=>{
+                        showTimeSlotsModal(currentDay);
+                    }
+                } else {
+                    todayDiv.classList.add('disabled');
+                }
+                calendar_content.appendChild(todayDiv);
+                currentDay++;
+            } else if(currentDay < today && month === now.getMonth() + 1) {
+                const todayDiv = createDiv('past-date');
+                todayDiv.innerHTML = currentDay.toString();
+
+                calendar_content.appendChild(todayDiv);
+                currentDay++;
+            } else if (currentDay <= numDays) {
+                const div = document.createElement('div');
+                div.innerHTML = currentDay.toString();
+
+                currentDay++;
+
+                if (isDayClickable(year, month, currentDay)) {
+                    div.classList.add('clickable');
+                    div.onclick = ()=>{
+                        showTimeSlotsModal(currentDay);
+                    }
+                } else {
+                    div.classList.add('disabled');
+                }
+                calendar_content.appendChild(div);
+
+            }
+        }
+    }
+}
 function populateCalendarDays(year, month) {
+    populateBTCalendar(year, month);
     $("#calendarBody").empty();
 
     let firstDay = new Date(year, month - 1, 1);
