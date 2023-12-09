@@ -75,7 +75,7 @@ td.clickable, td.disabled {
     margin-bottom: 2em;
 }
 
-.calendar, .calendar_weekdays, .calendar_content {
+.calendar, .calendar_weekdays, .calendar_content, .head-menu {
     max-width: 450px; }
 
 .calendar {
@@ -144,7 +144,8 @@ td.clickable, td.disabled {
     font-size: 16px;
     color: #fff !important; }
 
-.calendar_content div.clickable:after {
+.calendar_content div.clickable:after,
+.calendar_content div.disabled:after{
     position: absolute;
     top: 50%;
     left: 0;
@@ -214,8 +215,19 @@ button.switch-month {
 
 button.switch-month:hover {
     color: #1089ff; }
-.calendar_content div.clickable{
+
+.calendar_content div.clickable {
     cursor: pointer;
+}
+.calendar_content div.clickable {
+    color: #343434;
+}
+.calendar_content div.disabled {
+    color: #ff2d2d
+}
+.calendar_content div
+{
+    font-weight: 500;
 }
 
 @media (max-width: 500px) {
@@ -230,4 +242,32 @@ button.switch-month:hover {
     .calendar_content div {
         width: 9%;
     }
+}
+
+
+.head-menu, .head-menu .line {
+    display: flex;
+}
+
+.head-menu {
+    margin: auto;
+    flex-direction: column;
+}
+
+.head-menu .line {
+    /*justify-content: space-between;*/
+}
+.head-menu .line .menu {
+    min-width: 150px;
+}
+.head-menu .line .value {
+    font-weight: 600;
+}
+
+.head-menu .line:first-child {
+    border-top: 10px solid #1089ff;
+}
+
+.hidden {
+    display: none;
 }

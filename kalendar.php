@@ -27,7 +27,7 @@ $lng = new Lang();
     <main class="row">
         <div class="col-md-12">
             <!-- Kopfzeile Anfang -->
-            <ul class="nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); height: 50px;">
+            <ul class="hidden nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); height: 50px;">
                 <li class="nav-item">
                     <span class="nav-link text-white"><?php $lng->echoText('client_name'); ?></span>
                 </li>
@@ -44,6 +44,13 @@ $lng = new Lang();
                 </li>
             </ul>
             <!-- Kopfzeile Ende -->
+            <div class="head-menu">
+
+                <div class="line"><div class="menu">Kunden Name:</div><div class="value">Thomas Braun</div></div>
+                <div class="line"><div class="menu">Objekt:</div><div class="value">Festen Wohnung</div></div>
+                <div class="line"><div class="menu">Datum:</div><div class="value">11-12-2023 - 29-12-2023</div></div>
+                <div class="line"><div class="menu">Zeitraum:</div><div class="value">10:00 - 11:30</div></div>
+            </div>
 
             <!-- Kalender Anfang -->
             <div id="calendar_first" class="calendar calendar-first">
