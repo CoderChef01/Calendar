@@ -60,13 +60,13 @@ $lng = new Lang();
                     <button id="nextMonthBtn" class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
                 </div>
                 <div class="calendar_weekdays">
-                    <div style="color: rgb(68, 68, 68);">Mo</div>
-                    <div style="color: rgb(68, 68, 68);">Di</div>
-                    <div style="color: rgb(68, 68, 68);">Mi</div>
-                    <div style="color: rgb(68, 68, 68);">Do</div>
-                    <div style="color: rgb(68, 68, 68);">Fr</div>
-                    <div style="color: rgb(68, 68, 68);">Sa</div>
-                    <div style="color: rgb(68, 68, 68);">So</div>
+                    <div>Mo</div>
+                    <div>Di</div>
+                    <div>Mi</div>
+                    <div>Do</div>
+                    <div>Fr</div>
+                    <div class="weekend">Sa</div>
+                    <div class="weekend">So</div>
                 </div>
                 <div class="calendar_content">
                     <!-- Inhalt des Kalenders -->
