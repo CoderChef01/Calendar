@@ -145,6 +145,7 @@ td.clickable, td.disabled {
     color: #fff !important; }
 
 .calendar_content div.clickable:after,
+.calendar_content div.past-date:after,
 .calendar_content div.disabled:after{
     position: absolute;
     top: 50%;
