@@ -1,4 +1,9 @@
 <?php
+ $kuname = "Ügyfél neve";
+ $objekt = "Objekt";
+ $wartdatumvon = "idő kezdete";
+ $wartdatumbis = "idő vége";
+ $kalkzeit = "munka hossza";
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -14,34 +19,53 @@
 </head>
 
 <body>
+<div class="container">
+    <main class="row">
+        <div class="col-md-12">
+            <!-- Kopfzeile Anfang -->
+            <ul class="nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); height: 50px;">
+                <li class="nav-item">
+                    <span class="nav-link text-white"><?php echo $kuname; ?></span>
+                </li>
+                <?php if ($objekt !== $kuname): ?>
+                    <li class="nav-item">
+                        <span class="nav-link text-white"><?php echo $objekt; ?></span>
+                    </li>
+                <?php endif; ?>
+                <li class="nav-item">
+                    <span class="nav-link text-white"><?php echo $wartdatumvon . ' - ' . $wartdatumbis; ?></span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link text-white"><?php echo $kalkzeit; ?></span>
+                </li>
+            </ul>
+            <!-- Kopfzeile Ende -->
 
-    <main class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h2 class="mt-5 text-center text-primary head-title">Kalender</h2>
-
-                <div id="calendar_first" class="calendar calendar-first">
-                    <div class="calendar_header">
-                        <button id="prevMonthBtn" class="switch-month switch-left"> <i class="fa fa-chevron-left"></i></button>
-                        <h2 id="currentMonth"></h2>
-                        <button id="nextMonthBtn" class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
-                    </div>
-                    <div class="calendar_weekdays">
-                        <div style="color: rgb(68, 68, 68);">Mo</div>
-                        <div style="color: rgb(68, 68, 68);">Di</div>
-                        <div style="color: rgb(68, 68, 68);">Mi</div>
-                        <div style="color: rgb(68, 68, 68);">Do</div>
-                        <div style="color: rgb(68, 68, 68);">Fr</div>
-                        <div style="color: rgb(68, 68, 68);">Sa</div>
-                        <div style="color: rgb(68, 68, 68);">So</div>
-                    </div>
-                    <div class="calendar_content">
-
-                    </div>
+            <!-- Kalender Anfang -->
+            <div id="calendar_first" class="calendar calendar-first">
+                <div class="calendar_header">
+                    <button id="prevMonthBtn" class="switch-month switch-left"> <i class="fa fa-chevron-left"></i></button>
+                    <h2 id="currentMonth"></h2>
+                    <button id="nextMonthBtn" class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar_weekdays">
+                    <div style="color: rgb(68, 68, 68);">Mo</div>
+                    <div style="color: rgb(68, 68, 68);">Di</div>
+                    <div style="color: rgb(68, 68, 68);">Mi</div>
+                    <div style="color: rgb(68, 68, 68);">Do</div>
+                    <div style="color: rgb(68, 68, 68);">Fr</div>
+                    <div style="color: rgb(68, 68, 68);">Sa</div>
+                    <div style="color: rgb(68, 68, 68);">So</div>
+                </div>
+                <div class="calendar_content">
+                    <!-- Inhalt des Kalenders -->
                 </div>
             </div>
+            <!-- Kalender Ende -->
         </div>
     </main>
+</div>
+
 
     <!-- Bootstrap Modal zum Anzeigen von Zeitfenstern -->
     <div class="modal fade" id="timeSlotsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
