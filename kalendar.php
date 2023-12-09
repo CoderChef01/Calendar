@@ -1,4 +1,8 @@
 <?php
+require(__DIR__ . '/lib/lang.php');
+$lng = new Lang();
+
+
  $kuname = "Ügyfél neve";
  $objekt = "Objekt";
  $wartdatumvon = "idő kezdete";
@@ -25,7 +29,7 @@
             <!-- Kopfzeile Anfang -->
             <ul class="nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); height: 50px;">
                 <li class="nav-item">
-                    <span class="nav-link text-white"><?php echo $kuname; ?></span>
+                    <span class="nav-link text-white"><?php $lng->echoText('client_name'); ?></span>
                 </li>
                 <?php if ($objekt !== $kuname): ?>
                     <li class="nav-item">
@@ -33,10 +37,10 @@
                     </li>
                 <?php endif; ?>
                 <li class="nav-item">
-                    <span class="nav-link text-white"><?php echo $wartdatumvon . ' - ' . $wartdatumbis; ?></span>
+                    <span class="nav-link text-white"><?php echo $lng->getText('start_time') . ' - ' . $lng->getText('end_time'); ?></span>
                 </li>
                 <li class="nav-item">
-                    <span class="nav-link text-white"><?php echo $kalkzeit; ?></span>
+                    <span class="nav-link text-white"><?php $lng->echoText('work_length'); ?></span>
                 </li>
             </ul>
             <!-- Kopfzeile Ende -->
