@@ -21,36 +21,86 @@ function moveDateByMonth (offset) {
     }
 }
 
-jQuery(document).ready(function($) {
-    updateCalendar();
+let currentModal;
+function showModalFor(node) {
+    if(!node) {
+        return;
+    }
+    node.classList.add('show');
+    node.style.display = 'block';
+    node.style.opacity = '0';
+    setTimeout(()=>{
+        node.style.opacity = '1';
+    },20);
 
-    $("#prevMonthBtn").on("click", function () {
-        moveDateByMonth(-1);
-        updateCalendar();
-    });
-    
-    $("#nextMonthBtn").on("click", function () {
-        moveDateByMonth(1);
-        updateCalendar();
-    });
-    
-});
-
-function updateCalendar() {
-    let currentMonth = currentDate.getMonth() + 1;
-    let currentYear = currentDate.getFullYear();
-
-    if (currentMonth > 12) {
-        currentMonth = 1;
-        currentYear++;
-    } else if (currentMonth < 1) {
-        currentMonth = 12;
-        currentYear--;
+    const backDropContainer = document.createElement('div');
+    backDropContainer.className = "modal-backdrop fade show";
+    if(!document.querySelector('.modal-backdrop.fade.show')) {
+        document.body.appendChild(backDropContainer);
     }
 
-    $("#currentMonth").text(currentYear + "-" + currentMonth);
+    const closeBtn = node.querySelector('.modal-header .btn-close');
 
-    populateCalendarDays(currentYear, currentMonth);
+    const close = () => {
+        node.style.opacity = '0';
+        setTimeout(()=> {
+            backDropContainer.outerHTML = '';
+            node.classList.remove('show');
+            node.style.display = null;
+        }, 150);
+    };
+    if (closeBtn) {
+        closeBtn.onclick = close;
+    }
+    currentModal = {
+        close: close,
+        id: node.id,
+        node: node
+    }
+}
+
+document.body.onclick = (e) =>{
+    if (currentModal && currentModal.node === e.target) {
+        currentModal.close();
+    }
+}
+
+updateCalendar();
+
+const prevMonthBtn = document.getElementById('prevMonthBtn');
+if (prevMonthBtn) {
+    prevMonthBtn.onclick = () => {
+        moveDateByMonth(-1);
+        updateCalendar();
+    }
+}
+
+const nextMonthBtn = document.getElementById('nextMonthBtn');
+if (nextMonthBtn) {
+    nextMonthBtn.onclick = () => {
+        moveDateByMonth(1);
+        updateCalendar();
+    }
+}
+
+function updateCalendar() {
+    let month = currentDate.getMonth() + 1,
+        year = currentDate.getFullYear();
+
+    if (month > 12) {
+        month = 1;
+        year++;
+    } else if (month < 1) {
+        month = 12;
+        year--;
+    }
+
+    const currentMonth = document.getElementById('currentMonth');
+    if (currentMonth) {
+        currentMonth.innerHTML = year + "-" + month;
+    }
+
+    populateBTCalendar(year, month);
 }
 
 function populateBTCalendar(year, month) {
@@ -60,13 +110,13 @@ function populateBTCalendar(year, month) {
     }
     calendar_content.innerHTML = '';
 
-    let firstDay = new Date(year, month - 1, 1);
-    let lastDay = new Date(year, month, 0);
-    let numDays = lastDay.getDate();
-    let firstDayOfWeek = firstDay.getDay() || 7;
-    let currentDay = 1;
-    const now = new Date();
-    const today = now.getDate();
+    let firstDay = new Date(year, month - 1, 1),
+        lastDay = new Date(year, month, 0),
+        numDays = lastDay.getDate(),
+        firstDayOfWeek = firstDay.getDay() || 7,
+        currentDay = 1;
+    const now = new Date(),
+        today = now.getDate();
 
     const createDiv = (className) => {
         const div = document.createElement('div');
@@ -117,41 +167,6 @@ function populateBTCalendar(year, month) {
         }
     }
 }
-function populateCalendarDays(year, month) {
-    return populateBTCalendar(year, month);
-    /*
-    $("#calendarBody").empty();
-
-    let firstDay = new Date(year, month - 1, 1);
-    let lastDay = new Date(year, month, 0);
-    let numDays = lastDay.getDate();
-    let firstDayOfWeek = firstDay.getDay() || 7;
-    let currentDay = 1;
-
-    for (let i = 0; i < 6; i++) {
-        let row = $("<tr>").appendTo("#calendarBody");
-
-        for (let j = 1; j < 8; j++) {
-            if (i === 0 && j < firstDayOfWeek) {
-                row.append("<td></td>");
-            } else if (currentDay <= numDays) {
-                let cell = $("<td>").text(currentDay).appendTo(row);
-                currentDay++;
-
-                if (isDayClickable(year, month, currentDay)) {
-                    cell.addClass("clickable");
-                    cell.on("click", function () {
-                        showTimeSlotsModal($(this).text());
-                    });
-                } else {
-                    cell.addClass("disabled");
-                }
-            } else {
-                //row.append("<td></td>");
-            }
-        }
-    }*/
-}
 
 function isDayClickable(year, month, day) {
     let currentDay = new Date(year, month - 1, day);
@@ -162,95 +177,101 @@ function isDayClickable(year, month, day) {
 function showTimeSlotsModal(day) {
     // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
     // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
-    let availableTimeSlotsDe = ["08:00", "08:15", "08:30", "08:45", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45"];
-    let availableTimeSlotsDu = ["13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "15:00", "15:15", "15:30", "15:45"];
+    const availableTimeSlotsDe = ["08:00", "08:15", "08:30", "08:45", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45"];
+    const availableTimeSlotsDu = ["13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "15:00", "15:15", "15:30", "15:45"];
 
+    const timeSlotsModal = document.getElementById('timeSlotsModal');
+    if (!timeSlotsModal) {
+        console.error('#timeSlotsModal is not found in DOM');
+        return;
+    }
+
+    const modal = timeSlotsModal.querySelector("#timeSlotsModal .modal-body");
+    if (!modal) {
+        console.error('#timeSlotsModal .modal-body is not found in DOM');
+        return;
+    }
     // Clear modal body
-    $("#timeSlotsModal .modal-body").empty();
+    modal.innerHTML = '';
 
-    // Fügen Sie Radio-Buttons für "de" und "du" hinzu
-    let deButton = $("<button>")
-        .addClass("btn btn-primary m-2")
-        .text("Vorm")
-        //.css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
-        .on("click", function () {
-            showAvailableTimeSlots("de", availableTimeSlotsDe);
-        });
+    const deButton = document.createElement('button');
+    deButton.className = "btn btn-primary m-2";
+    deButton.innerHTML = "Vorm";
+    deButton.onclick = ()=> showAvailableTimeSlots("de", availableTimeSlotsDe);
 
-    let duButton = $("<button>")
-        .addClass("btn btn-primary m-2")
-        .text("Nach")
-        //.css({"font-size": "small", "width": "12%"}) // Schriftgröße und Breite setzen
-        .on("click", function () {
-            showAvailableTimeSlots("du", availableTimeSlotsDu);
-        });
+    const duButton = document.createElement('button');
+    duButton.className = "btn btn-primary m-2";
+    duButton.innerHTML = "Nach";
+    duButton.onclick = ()=> showAvailableTimeSlots("du", availableTimeSlotsDu);
 
-    // Fügen Sie "De" und "Du" Buttons zum Modal-Body hinzu
-    $("#timeSlotsModal .modal-body").append(deButton, duButton);
+
+
+    const title = document.createElement('h5');
+    title.className = "modal-title text-center";
+    title.innerHTML = "Welcher Zeitraum passt Ihnen?";
 
     // Fügen Sie den Titel zum Modal hinzu
-    let title = $("<h5>").addClass("modal-title text-center").text("Welcher Zeitraum passt Ihnen?");
-    $("#timeSlotsModal .modal-body").append(title);
+    modal.appendChild(title);
 
     // Erstellen Sie einen Container für die Zeitraumtyp-Buttons
-    let timeTypeContainer = $("<div>").addClass("d-flex justify-content-center buttons");
-    $("#timeSlotsModal .modal-body").append(timeTypeContainer);
+    const timeTypeContainer = document.createElement('div');
+    timeTypeContainer.className = "d-flex justify-content-center buttons";
+    timeTypeContainer.appendChild(deButton);
+    timeTypeContainer.appendChild(duButton);
 
-    // Fügen Sie "De" und "Du" Buttons zum Container hinzu
-    timeTypeContainer.append(deButton, duButton);
+    modal.appendChild(timeTypeContainer);
 
     // Erstellen Sie einen Container für die Zeitfenster
-    let timeSlotsContainer = $("<div>").attr("id", "timeSlotsContainer");
-    $("#timeSlotsModal .modal-body").append(timeSlotsContainer);
+    const timeSlotsContainer = document.createElement('div');
+    timeSlotsContainer.id = "timeSlotsContainer";
+    modal.appendChild(timeSlotsContainer);
 
-    // Zeigen Sie das Modal an
-    $("#timeSlotsModal").modal("show");
+    showModalFor(timeSlotsModal);
 }
 
 
 
 function showAvailableTimeSlots(timeType, availableTimeSlots) {
     // Holen Sie sich den Container für die Zeitfenster
-    let timeSlotsContainer = $("#timeSlotsContainer");
-
+    const timeSlotsContainer = document.getElementById('timeSlotsContainer');
+    if (!timeSlotsContainer) {
+        console.error('#timeSlotsContainer is not found in DOM');
+        return;
+    }
     // Leeren Sie den Container
-    timeSlotsContainer.empty();
+    timeSlotsContainer.innerHTML = '';
 
     // Zeigen Sie die gefilterten Zeitfenster an
     let buttonsPerRow = 4; // Az egy sorban megjelenő gombok száma
     for (let i = 0; i < availableTimeSlots.length; i++) {
-        let timeSlot = availableTimeSlots[i];
-        let button = $("<button>")
-             .addClass("btn btn-primary m-3") // vagy m-4
-             .text(timeSlot)
-             .on("click", function () {
-        alert("Ausgewählter Zeitraum: " + $(this).text());
-    });
+        const timeSlot = availableTimeSlots[i];
+        const button = document.createElement('button');
+        button.className = "btn btn-primary m-3";
+        button.innerHTML = timeSlot;
+        button.onclick = ()=>alert("Ausgewählter Zeitraum: " + timeSlot);
 
-        // Fügen Sie jeden Zeitfenster-Button dem Container hinzu
-        timeSlotsContainer.append(button);
+        timeSlotsContainer.appendChild(button);
 
         // Ha elértük a gombok számát a soron, akkor adjunk hozzá egy új sort
         if ((i + 1) % buttonsPerRow === 0) {
-            timeSlotsContainer.append("<br>");
+            timeSlotsContainer.appendChild(document.createElement("br"));
         }
     }
 
     // Fügen Sie eine leere div für den Abstand hinzu
-    let spacerDiv = $("<div>").css({ "height": "1em" });
-    timeSlotsContainer.append(spacerDiv);
+    const spacerDiv = document.createElement('div');
+    spacerDiv.style.height = "1em";
+    timeSlotsContainer.appendChild(spacerDiv);
 
     // Fügen Sie den "Akzeptieren" Button hinzu
-    let acceptButton = $("<button>")
-        .addClass("btn btn-secondary m-2")
-        .text("Akzeptieren")
-        .css({ "float": "right" })  // Rechtsausrichtung
-        .on("click", function () {
-            alert("Akzeptiert");
-        });
+    const acceptButton = document.createElement('button');
+    acceptButton.className = "btn btn-secondary m-2";
+    acceptButton.innerHTML = "Akzeptieren";
+    acceptButton.style.float = "right";
+    acceptButton.onclick = ()=>alert("Akzeptiert");
 
     // Fügen Sie den Akzeptieren Button dem Container hinzu
-    timeSlotsContainer.append(acceptButton);
+    timeSlotsContainer.appendChild(acceptButton);
 }
 
 
