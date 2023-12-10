@@ -231,7 +231,7 @@ function generateTimeSlots (bookedSlots, shift) {
 
     while (shiftDates[0] < shiftDates[1]) {
         const time = shiftDates[0].getHours().toString().padStart(2, '0') + ":" +
-            shiftDates[1].getMinutes().toString().padStart(2, '0');
+            shiftDates[0].getMinutes().toString().padStart(2, '0');
         const booked = bookedSlots.includes(time);
         /**
          * @type {TimeSlot}
@@ -347,6 +347,7 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
 
     const notes = document.createElement('textarea');
     notes.classList.add('slot-note');
+    notes.setAttribute('rows', '3');
     notes.setAttribute('placeholder', 'Bemerkung für Monteur!');
     noteContainer.appendChild(notes);
     timeSlotsContainer.appendChild(noteContainer);
@@ -355,6 +356,23 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     const spacerDiv = document.createElement('div');
     spacerDiv.style.height = "1em";
     timeSlotsContainer.appendChild(spacerDiv);
+
+
+    const summary = document.createElement('div');
+    summary.classList.add('summary');
+    const getSummaryLine = (key, value)=> {
+        const line = document.createElement('div');
+        line.classList.add('line');
+        line.innerHTML = '<div class="menu">'+key+'</div><div class="value">'+value+'</div>';
+
+        return line;
+    }
+
+    summary.appendChild(getSummaryLine('Wartungs datum:', '21-12-2023'));
+    summary.appendChild(getSummaryLine('Wartungs zeitraum:', '07:30 - 09:00'));
+
+    timeSlotsContainer.appendChild(summary);
+
 
     const buttons = document.createElement('div');
     buttons.classList.add('buttons-wrapper');

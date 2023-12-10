@@ -243,7 +243,7 @@ button.switch-month:hover {
 }
 
 
-.head-menu, .head-menu .line {
+.head-menu, .head-menu .line, .summary .line {
     display: flex;
 }
 
@@ -255,12 +255,24 @@ button.switch-month:hover {
 .head-menu .line {
     /*justify-content: space-between;*/
 }
-.head-menu .line .menu {
+.head-menu .line .menu,
+.summary .line .menu {
     min-width: 150px;
 }
 .head-menu .line .value,
 .calendar_weekdays > div {
     font-weight: 600;
+}
+.summary .line {
+    font-size: 14px;
+    color: #5b5b5b;
+    margin-bottom: 8px;
+}
+.summary {
+    margin: 0 8px;
+}
+.summary .line .value {
+    font-weight: 500;
 }
 
 .head-menu .separator {
