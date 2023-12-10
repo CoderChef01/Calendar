@@ -2,6 +2,9 @@
 require(__DIR__ . '/lib/lang.php');
 $lng = new Lang();
 
+$bookings = array(); // TODO: Gather them from SQL
+
+
 
  $kuname = "Ügyfél neve";
  $objekt = "Objekt";
@@ -45,7 +48,7 @@ $lng = new Lang();
             </ul>
             <!-- Kopfzeile Ende -->
             <div class="head-menu">
-
+                <div class="separator"></div>
                 <div class="line"><div class="menu">Kunden Name:</div><div class="value">Thomas Braun</div></div>
                 <div class="line"><div class="menu">Objekt:</div><div class="value">Festen Wohnung</div></div>
                 <div class="line"><div class="menu">Datum:</div><div class="value">11-12-2023 - 29-12-2023</div></div>
@@ -83,32 +86,15 @@ $lng = new Lang();
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Freie Termine</h5>
+                    <h5 class="modal-title">Wahlen sie Eine Freie Termin.</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Fügen Sie hier Ihre Formularelemente hinzu -->
-                    <form id="appointmentForm">
-                        <div class="mb-3">
-                            <label for="timeType" class="form-label">Wählen Sie die Uhrzeit:</label>
-                            <select class="form-select" id="timeType" required>
-                                <option value="" selected disabled>Wählen Sie die Uhrzeit</option>
-                                <option value="de">Vorm.</option>
-                                <option value="du">Nachm.</option>
-                            </select>
-                        </div>
-                        <div class="mb-3" id="timeSlotsContainer">
-                            <!-- Zeitfenster werden hier dynamisch hinzugefügt -->
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="submitAppointment()">Senden</button>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="./vendors/jquery/jquery-3.7.1.min.js"></script>
-    <script src="./vendors/bootstrap-5.3.2-dist/js/bootstrap.min.js"></script>
     <script src="./script.js"></script>
 </body>
 
