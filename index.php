@@ -22,7 +22,7 @@ $globalCalendarData = array(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalender</title>
+    <title><?php $lng->echoText('calendar'); ?></title>
     <link rel="stylesheet" href="./vendor/bootstrap-5.3.2-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./vendor/fontawesome-free-5.15.4-web/css/all.min.css">
     <link rel="stylesheet" href="./style.css">
@@ -79,13 +79,13 @@ $globalCalendarData = array(
                     <button id="nextMonthBtn" class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
                 </div>
                 <div class="calendar_weekdays">
-                    <div>Mo</div>
-                    <div>Di</div>
-                    <div>Mi</div>
-                    <div>Do</div>
-                    <div>Fr</div>
-                    <div class="weekend">Sa</div>
-                    <div class="weekend">So</div>
+                    <div><?php $lng->getText('mo'); ?></div>
+                    <div><?php $lng->getText('tu'); ?></div>
+                    <div><?php $lng->getText('we'); ?></div>
+                    <div><?php $lng->getText('th'); ?></div>
+                    <div><?php $lng->getText('fr'); ?></div>
+                    <div class="weekend"><?php $lng->getText('sa'); ?></div>
+                    <div class="weekend"><?php $lng->getText('so'); ?></div>
                 </div>
                 <div class="calendar_content">
                     <!-- Inhalt des Kalenders -->
@@ -103,7 +103,7 @@ $globalCalendarData = array(
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"><?php $lng->echoText('choose_a_free_appointment'); ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php $lng->echoText('close'); ?>"></button>
                 </div>
                 <div class="modal-body">
                 </div>

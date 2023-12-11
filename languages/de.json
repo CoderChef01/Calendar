@@ -12,5 +12,18 @@
   "maintenance_date": "Wartungs datum",
   "maintenance_time": "Wartungs zeitraum",
   "note": "Bemerkung für Monteur!",
-  "selected_period": "Ausgewählter Zeitraum"
+  "selected_period": "Ausgewählter Zeitraum",
+  "back": "Zurück",
+  "book": "Buchung",
+  "accepted": "Akzeptiert",
+  "cancelled": "Zurücked",
+  "close": "Schließen",
+  "calendar": "Kalender",
+  "mo": "Mo",
+  "tu": "Di",
+  "we": "Mi",
+  "th": "Do",
+  "fr": "Fr",
+  "sa": "Sa",
+  "su": "So"
 }

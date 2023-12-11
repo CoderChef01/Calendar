@@ -387,14 +387,14 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     // Fügen Sie den "Akzeptieren" Button hinzu
     const acceptButton = document.createElement('button');
     acceptButton.className = "btn btn-secondary";
-    acceptButton.innerHTML = "Zurück";
-    acceptButton.onclick = ()=>alert("Zurücked");
+    acceptButton.innerHTML = LNG.getText('back');
+    acceptButton.onclick = ()=>alert(LNG.getText('cancelled'));
 
     // Fügen Sie den "Akzeptieren" Button hinzu
     const backButton = document.createElement('button');
     backButton.className = "btn btn-primary";
-    backButton.innerHTML = "Buchung";
-    backButton.onclick = ()=>alert("Akzeptiert");
+    backButton.innerHTML = LNG.getText('book');
+    backButton.onclick = ()=>alert(LNG.getText('accepted'));
 
     // Fügen Sie den Akzeptieren Button dem Container hinzu
     buttons.appendChild(acceptButton);
