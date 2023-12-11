@@ -1,10 +1,15 @@
 <?php
 require(__DIR__ . '/lib/lang.php');
+require(__DIR__ . '/lib/sql.php');
 $lng = new Lang();
+$sqlMGR = new SQLMgr();
 
-$bookings = array(); // TODO: Gather them from SQL
+$bookings = $sqlMGR->get('SELECT `impdatum`, `kalkzeit` FROM `kunden`');
 
-
+$globalCalendarData = array(
+    'bookings' => $bookings,
+    'translations' => $lng->getTranslations()
+);
 
  $kuname = "Ügyfél neve";
  $objekt = "Objekt";
@@ -23,6 +28,12 @@ $bookings = array(); // TODO: Gather them from SQL
     <link rel="stylesheet" href="./style.css">
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <script type="application/javascript">
+        /**
+         * Global Data from SQL
+         */
+        window.calendarData = <?php echo json_encode($globalCalendarData); ?>;
+    </script>
 </head>
 
 <body>
@@ -49,10 +60,10 @@ $bookings = array(); // TODO: Gather them from SQL
             <!-- Kopfzeile Ende -->
             <div class="head-menu">
                 <div class="separator"></div>
-                <div class="line"><div class="menu">Kunden Name:</div><div class="value">Thomas Braun</div></div>
-                <div class="line"><div class="menu">Objekt:</div><div class="value">Festen Wohnung</div></div>
-                <div class="line"><div class="menu">Datum:</div><div class="value">11-12-2023 - 29-12-2023</div></div>
-                <div class="line"><div class="menu">Zeitraum:</div><div class="value">10:00 - 11:30</div></div>
+                <div class="line"><div class="menu"><?php $lng->echoText('client_name'); ?>:</div><div class="value">Thomas Braun</div></div>
+                <div class="line"><div class="menu"><?php $lng->echoText('object'); ?>:</div><div class="value">Festen Wohnung</div></div>
+                <div class="line"><div class="menu"><?php $lng->echoText('date'); ?>:</div><div class="value">11-12-2023 - 29-12-2023</div></div>
+                <div class="line"><div class="menu"><?php $lng->echoText('time'); ?>:</div><div class="value">10:00 - 11:30</div></div>
             </div>
 
             <!-- Kalender Anfang -->
@@ -86,7 +97,7 @@ $bookings = array(); // TODO: Gather them from SQL
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Wahlen sie Eine Freie Termin.</h5>
+                    <h5 class="modal-title"><?php $lng->echoText('choose_a_free_appointment'); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
                 </div>
                 <div class="modal-body">
