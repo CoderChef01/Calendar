@@ -23,8 +23,8 @@ $globalCalendarData = array(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender</title>
-    <link rel="stylesheet" href="./vendors/bootstrap-5.3.2-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./vendors/fontawesome-free-5.15.4-web/css/all.min.css">
+    <link rel="stylesheet" href="./vendor/bootstrap-5.3.2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./vendor/fontawesome-free-5.15.4-web/css/all.min.css">
     <link rel="stylesheet" href="./style.css">
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
@@ -40,6 +40,11 @@ $globalCalendarData = array(
 <div class="container">
     <main class="row">
         <div class="col-md-12">
+            <div class="head-image">
+                <div class="image-wrapper">
+                    <img src="./images/dinkel_logo_pur.png" alt="Dinkel Bader Warme Klima"/>
+                </div>
+            </div>
             <!-- Kopfzeile Anfang -->
             <ul class="hidden nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); height: 50px;">
                 <li class="nav-item">
