@@ -2,6 +2,9 @@
 require(__DIR__ . '/lib/lang.php');
 $lng = new Lang();
 
+$bookings = array(); // TODO: Gather them from SQL
+
+
 
  $kuname = "Ügyfél neve";
  $objekt = "Objekt";
@@ -27,7 +30,7 @@ $lng = new Lang();
     <main class="row">
         <div class="col-md-12">
             <!-- Kopfzeile Anfang -->
-            <ul class="nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); height: 50px;">
+            <ul class="hidden nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); height: 50px;">
                 <li class="nav-item">
                     <span class="nav-link text-white"><?php $lng->echoText('client_name'); ?></span>
                 </li>
@@ -44,6 +47,13 @@ $lng = new Lang();
                 </li>
             </ul>
             <!-- Kopfzeile Ende -->
+            <div class="head-menu">
+                <div class="separator"></div>
+                <div class="line"><div class="menu">Kunden Name:</div><div class="value">Thomas Braun</div></div>
+                <div class="line"><div class="menu">Objekt:</div><div class="value">Festen Wohnung</div></div>
+                <div class="line"><div class="menu">Datum:</div><div class="value">11-12-2023 - 29-12-2023</div></div>
+                <div class="line"><div class="menu">Zeitraum:</div><div class="value">10:00 - 11:30</div></div>
+            </div>
 
             <!-- Kalender Anfang -->
             <div id="calendar_first" class="calendar calendar-first">
@@ -53,13 +63,13 @@ $lng = new Lang();
                     <button id="nextMonthBtn" class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
                 </div>
                 <div class="calendar_weekdays">
-                    <div style="color: rgb(68, 68, 68);">Mo</div>
-                    <div style="color: rgb(68, 68, 68);">Di</div>
-                    <div style="color: rgb(68, 68, 68);">Mi</div>
-                    <div style="color: rgb(68, 68, 68);">Do</div>
-                    <div style="color: rgb(68, 68, 68);">Fr</div>
-                    <div style="color: rgb(68, 68, 68);">Sa</div>
-                    <div style="color: rgb(68, 68, 68);">So</div>
+                    <div>Mo</div>
+                    <div>Di</div>
+                    <div>Mi</div>
+                    <div>Do</div>
+                    <div>Fr</div>
+                    <div class="weekend">Sa</div>
+                    <div class="weekend">So</div>
                 </div>
                 <div class="calendar_content">
                     <!-- Inhalt des Kalenders -->
@@ -76,32 +86,15 @@ $lng = new Lang();
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Freie Termine</h5>
+                    <h5 class="modal-title">Wahlen sie Eine Freie Termin.</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Fügen Sie hier Ihre Formularelemente hinzu -->
-                    <form id="appointmentForm">
-                        <div class="mb-3">
-                            <label for="timeType" class="form-label">Wählen Sie die Uhrzeit:</label>
-                            <select class="form-select" id="timeType" required>
-                                <option value="" selected disabled>Wählen Sie die Uhrzeit</option>
-                                <option value="de">Vorm.</option>
-                                <option value="du">Nachm.</option>
-                            </select>
-                        </div>
-                        <div class="mb-3" id="timeSlotsContainer">
-                            <!-- Zeitfenster werden hier dynamisch hinzugefügt -->
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="submitAppointment()">Senden</button>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="./vendors/jquery/jquery-3.7.1.min.js"></script>
-    <script src="./vendors/bootstrap-5.3.2-dist/js/bootstrap.min.js"></script>
     <script src="./script.js"></script>
 </body>
 

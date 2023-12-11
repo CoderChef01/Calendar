@@ -1,4 +1,4 @@
-/* Fügen Sie diese Stile für klickbare und deaktivierte Tage hinzu */
+
 td.clickable {
     background-color: #f0f0f0; /* Hellgraue Hintergrundfarbe für klickbare Tage */
 }
@@ -25,10 +25,6 @@ td.clickable, td.disabled {
     margin: 0.5%; /* Kleinerer Außenrand zwischen den Schaltflächen */
 }
 
-#timeSlotsContainer {
-    max-height: 60vh; /* Kleinere maximale Höhe für die "Freie Termine" Schaltflächen */
-    overflow-y: auto; /* Scrollleiste hinzufügen, wenn der Inhalt zu groß für die angegebene Größe ist */
-}
 
 /* Zusätzliche Anpassung für die Zentrierung */
 .text-center {
@@ -42,14 +38,11 @@ td.clickable, td.disabled {
     margin: 0.5%; /* Kleinerer Außenrand zwischen den Schaltflächen */
 }
 
-#timeSlotsContainer {
-    max-height: 60vh; /* Kleinere maximale Höhe für die "Freie Termine" Schaltflächen */
-    overflow-y: auto; /* Scrollleiste hinzufügen, wenn der Inhalt zu groß für die angegebene Größe ist */
-}
 
 .modal-content {
     max-width: 80%; /* Változtasd meg az értéket igényeid szerint */
     margin: 0 auto;
+    width: 300px;
 }
 
 @media (max-width: 400px) {
@@ -75,7 +68,7 @@ td.clickable, td.disabled {
     margin-bottom: 2em;
 }
 
-.calendar, .calendar_weekdays, .calendar_content {
+.calendar, .calendar_weekdays, .calendar_content, .head-menu {
     max-width: 450px; }
 
 .calendar {
@@ -101,7 +94,7 @@ td.clickable, td.disabled {
 .calendar_weekdays div {
     display: inline-block;
     vertical-align: top;
-    color: #fff !important;
+    color: #fff;
 }
 
 .calendar_weekdays div, .calendar_content div {
@@ -109,7 +102,6 @@ td.clickable, td.disabled {
     overflow: hidden;
     text-align: center;
     background-color: transparent;
-    color: #000;
     font-size: 16px;
     padding: 15px 0; }
 
@@ -144,7 +136,9 @@ td.clickable, td.disabled {
     font-size: 16px;
     color: #fff !important; }
 
-.calendar_content div.clickable:after {
+.calendar_content div.clickable:after,
+.calendar_content div.past-date:after,
+.calendar_content div.disabled:after{
     position: absolute;
     top: 50%;
     left: 0;
@@ -198,14 +192,16 @@ td.clickable, td.disabled {
     color: #1089ff;
     float: left;
     width: 70%;
-    margin: 0 0 10px; }
+    margin: 0;
+}
 
 button.switch-month {
     background-color: transparent;
     padding: 0;
     outline: none;
     border: none;
-    color: #dcdcdc;
+    /*color: #dcdcdc;*/
+    color: #1089ff;
     float: left;
     width: 15%;
     -webkit-transition: color .2s;
@@ -213,9 +209,23 @@ button.switch-month {
     transition: color .2s; }
 
 button.switch-month:hover {
-    color: #1089ff; }
-.calendar_content div.clickable{
+    color:black;
+}
+
+.calendar_content div.clickable {
     cursor: pointer;
+}
+.calendar_content div.clickable {
+    color: #616060;
+}
+.calendar_content div.disabled,
+.calendar_weekdays > div.weekend
+{
+    color: #ff5d5d
+}
+.calendar_content div
+{
+    font-weight: 500;
 }
 
 @media (max-width: 500px) {
@@ -230,4 +240,115 @@ button.switch-month:hover {
     .calendar_content div {
         width: 9%;
     }
+}
+
+
+.head-menu, .head-menu .line, .summary .line {
+    display: flex;
+}
+
+.head-menu {
+    margin: auto;
+    flex-direction: column;
+}
+
+.head-menu .line {
+    /*justify-content: space-between;*/
+}
+.head-menu .line .menu,
+.summary .line .menu {
+    min-width: 150px;
+}
+.head-menu .line .value,
+.calendar_weekdays > div {
+    font-weight: 600;
+}
+.summary .line {
+    font-size: 14px;
+    color: #5b5b5b;
+    margin-bottom: 8px;
+}
+.summary {
+    margin: 0 8px;
+}
+.summary .line .value {
+    font-weight: 500;
+}
+
+.head-menu .separator {
+    background-color: #1089ff;
+    height: 10px;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.hidden {
+    display: none;
+}
+
+#timeSlotsModal .modal-title {
+    font-size: 14px;
+    color: #004593;
+    margin-bottom: 5px;
+}
+#timeSlotsModal .modal-header {
+
+    padding: 9px 10px 5px 7px;
+    border-bottom: unset;
+}
+#timeSlotsModal .btn-close {
+    font-size: 9px;
+}
+#timeSlotsModal .modal-body {
+    border-top: 5px solid #004593;
+    margin: 0 8px;
+    padding: 0;
+}
+
+.buttons-wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+#timeSlotsModal .time-type > button,
+.buttons-wrapper > button
+{
+    font-size: 13px;
+    padding: 7px 32px;
+    height: auto;
+    border-radius: 4px;
+    margin: 20px 0;
+    min-width: 132px;
+}
+#timeSlotsContainer .slot-parent {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+#timeSlotsContainer .slot-parent > button {
+    flex: 1 0 22%;
+    box-sizing: border-box;
+    margin: 4px;
+    padding: 2px 8px;
+    font-size: 14px;
+}
+#timeSlotsContainer .slot-parent > button.free {
+    background-color: #29a644;
+}
+#timeSlotsContainer .slot-parent > button.booked {
+    background-color: #f0364b;
+}
+
+.slot-note-wrapper {
+    margin: 14px 5px;
+}
+.slot-note-wrapper .slot-note {
+    width: 100%;
+    border: 1px solid #0d6efd;
+    border-radius: 5px;
+    padding-left: 8px;
+    padding-top: 8px;
+    font-size: 14px;
 }

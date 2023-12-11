@@ -4,8 +4,17 @@ const CONSTANTS = {
         min: 1,
         max: 1
     },
-    now: new Date()
+    now: new Date(),
+    workLength: 90,
+    timeSteps: 15
 }
+
+/**
+ * @typedef {Object} TimeSlot
+ * @property {boolean} booked = Is it booked
+ * @property {string} time -
+ * @property {number} size -
+ */
 
 /**
  * moveDateByMonth
@@ -174,11 +183,77 @@ function isDayClickable(year, month, day) {
     return dayOfWeek !== 0 && dayOfWeek !== 6;
 }
 
+
+/**
+ * addMinutes
+ * @param {Date} date - The Date object we want to modify
+ * @param {number} minutes - The minutes we want to add for the date object
+ */
+function addMinutes (date, minutes) {
+    date.setTime(date.getTime() + minutes * 60000);
+    return date;
+}
+/**
+ * getTimedDate
+ * @param {string} time - Time format like '8:00'
+ * @returns {Date}
+ */
+function getTimedDate (time) {
+    const parts = time.trim().split(':');
+    const date = new Date();
+    date.setHours(Number(parts.shift()));
+    date.setMinutes(Number(parts.shift()));
+    return date;
+}
+
+
+/**
+ * generateTimeSlots
+ * @param {string[]} bookedSlots - All currently booked 1.5 hour slots
+ * @param {string[]} shift - The current work shift, for example ['8:00', '12:00']
+ * @returns {TimeSlot[]}
+ */
+function generateTimeSlots (bookedSlots, shift) {
+    const shiftDates = [getTimedDate(shift[0]), getTimedDate(shift[1])];
+
+    if (shiftDates[0] > shiftDates[1]) {
+        // switch them if the first one is later
+        const _temp = shiftDates[0];
+        shiftDates[0] = shiftDates[1];
+        shiftDates[1] = _temp;
+    }
+
+    /**
+     * slots
+     * @type {TimeSlot[]}
+     */
+    const slots = [];
+
+    while (shiftDates[0] < shiftDates[1]) {
+        const time = shiftDates[0].getHours().toString().padStart(2, '0') + ":" +
+            shiftDates[0].getMinutes().toString().padStart(2, '0');
+        const booked = bookedSlots.includes(time);
+        /**
+         * @type {TimeSlot}
+         */
+        const slot = {
+            time: time,
+            booked: booked,
+            size: CONSTANTS.workLength
+        }
+        slots.push(slot);
+
+        addMinutes(shiftDates[0], CONSTANTS.timeSteps);
+    }
+
+    return slots;
+}
+
 function showTimeSlotsModal(day) {
     // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
     // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
-    const availableTimeSlotsDe = ["08:00", "08:15", "08:30", "08:45", "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45"];
-    const availableTimeSlotsDu = ["13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", "15:00", "15:15", "15:30", "15:45"];
+    const availableTimeSlotsDe = generateTimeSlots([], ['7:00', '12:00']);
+    const availableTimeSlotsDu = generateTimeSlots([], ['13:00', '16:00']);
 
     const timeSlotsModal = document.getElementById('timeSlotsModal');
     if (!timeSlotsModal) {
@@ -195,27 +270,27 @@ function showTimeSlotsModal(day) {
     modal.innerHTML = '';
 
     const deButton = document.createElement('button');
-    deButton.className = "btn btn-primary m-2";
-    deButton.innerHTML = "Vorm";
+    deButton.className = "btn btn-primary";
+    deButton.innerHTML = "Vormittag";
     deButton.onclick = ()=> showAvailableTimeSlots("de", availableTimeSlotsDe);
 
     const duButton = document.createElement('button');
-    duButton.className = "btn btn-primary m-2";
-    duButton.innerHTML = "Nach";
+    duButton.className = "btn btn-primary";
+    duButton.innerHTML = "Nachmittag";
     duButton.onclick = ()=> showAvailableTimeSlots("du", availableTimeSlotsDu);
 
 
 
-    const title = document.createElement('h5');
+    /*const title = document.createElement('h5');
     title.className = "modal-title text-center";
-    title.innerHTML = "Welcher Zeitraum passt Ihnen?";
+    title.innerHTML = "Welcher Zeitraum passt Ihnen?";*/
 
     // Fügen Sie den Titel zum Modal hinzu
-    modal.appendChild(title);
+    // modal.appendChild(title);
 
     // Erstellen Sie einen Container für die Zeitraumtyp-Buttons
     const timeTypeContainer = document.createElement('div');
-    timeTypeContainer.className = "d-flex justify-content-center buttons";
+    timeTypeContainer.className = "time-type d-flex justify-content-between buttons";
     timeTypeContainer.appendChild(deButton);
     timeTypeContainer.appendChild(duButton);
 
@@ -230,7 +305,11 @@ function showTimeSlotsModal(day) {
 }
 
 
-
+/**
+ *
+ * @param {'de'|'du'} timeType - Current Type of the Time
+ * @param {TimeSlot[]} availableTimeSlots - List of available time slots for the calendar
+ */
 function showAvailableTimeSlots(timeType, availableTimeSlots) {
     // Holen Sie sich den Container für die Zeitfenster
     const timeSlotsContainer = document.getElementById('timeSlotsContainer');
@@ -241,37 +320,80 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     // Leeren Sie den Container
     timeSlotsContainer.innerHTML = '';
 
+    const slotsNode = document.createElement('div');
+    slotsNode.classList.add('slot-parent');
+
     // Zeigen Sie die gefilterten Zeitfenster an
-    let buttonsPerRow = 4; // Az egy sorban megjelenő gombok száma
     for (let i = 0; i < availableTimeSlots.length; i++) {
         const timeSlot = availableTimeSlots[i];
         const button = document.createElement('button');
-        button.className = "btn btn-primary m-3";
-        button.innerHTML = timeSlot;
-        button.onclick = ()=>alert("Ausgewählter Zeitraum: " + timeSlot);
-
-        timeSlotsContainer.appendChild(button);
-
-        // Ha elértük a gombok számát a soron, akkor adjunk hozzá egy új sort
-        if ((i + 1) % buttonsPerRow === 0) {
-            timeSlotsContainer.appendChild(document.createElement("br"));
+        button.classList.add('btn');
+        button.classList.add('btn-primary');
+        if (timeSlot.booked) {
+            button.classList.add('booked');
+        } else {
+            button.classList.add('free');
         }
+        button.innerHTML = timeSlot.time;
+        button.onclick = ()=>alert("Ausgewählter Zeitraum: " + timeSlot.time);
+
+        slotsNode.appendChild(button);
     }
+
+    timeSlotsContainer.appendChild(slotsNode);
+
+    const noteContainer = document.createElement('div');
+    noteContainer.classList.add('slot-note-wrapper');
+
+    const notes = document.createElement('textarea');
+    notes.classList.add('slot-note');
+    notes.setAttribute('rows', '3');
+    notes.setAttribute('placeholder', 'Bemerkung für Monteur!');
+    noteContainer.appendChild(notes);
+    timeSlotsContainer.appendChild(noteContainer);
 
     // Fügen Sie eine leere div für den Abstand hinzu
     const spacerDiv = document.createElement('div');
     spacerDiv.style.height = "1em";
     timeSlotsContainer.appendChild(spacerDiv);
 
+
+    const summary = document.createElement('div');
+    summary.classList.add('summary');
+    const getSummaryLine = (key, value)=> {
+        const line = document.createElement('div');
+        line.classList.add('line');
+        line.innerHTML = '<div class="menu">'+key+'</div><div class="value">'+value+'</div>';
+
+        return line;
+    }
+
+    summary.appendChild(getSummaryLine('Wartungs datum:', '21-12-2023'));
+    summary.appendChild(getSummaryLine('Wartungs zeitraum:', '07:30 - 09:00'));
+
+    timeSlotsContainer.appendChild(summary);
+
+
+    const buttons = document.createElement('div');
+    buttons.classList.add('buttons-wrapper');
+
+
     // Fügen Sie den "Akzeptieren" Button hinzu
     const acceptButton = document.createElement('button');
-    acceptButton.className = "btn btn-secondary m-2";
-    acceptButton.innerHTML = "Akzeptieren";
-    acceptButton.style.float = "right";
-    acceptButton.onclick = ()=>alert("Akzeptiert");
+    acceptButton.className = "btn btn-secondary";
+    acceptButton.innerHTML = "Zurück";
+    acceptButton.onclick = ()=>alert("Zurücked");
+
+    // Fügen Sie den "Akzeptieren" Button hinzu
+    const backButton = document.createElement('button');
+    backButton.className = "btn btn-primary";
+    backButton.innerHTML = "Buchung";
+    backButton.onclick = ()=>alert("Akzeptiert");
 
     // Fügen Sie den Akzeptieren Button dem Container hinzu
-    timeSlotsContainer.appendChild(acceptButton);
+    buttons.appendChild(acceptButton);
+    buttons.appendChild(backButton);
+    timeSlotsContainer.appendChild(buttons);
 }
 
 
