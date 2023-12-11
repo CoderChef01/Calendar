@@ -1,0 +1,19 @@
+{
+    "name": "drh/kalender",
+    "description": "A simple calendar to manage appointments",
+    "type": "project",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Attila Reterics",
+            "email": "reterics.attila@gmail.com"
+        },
+        {
+            "name": "Benjamin Kovacs",
+            "email": "benjamin.kovacs94@gmail.com"
+        }
+    ],
+    "require": {
+      "ext-json": "*"
+    }
+}

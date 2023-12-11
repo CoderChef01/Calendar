@@ -61,4 +61,8 @@ class Lang
     public function echoText($text) {
         echo $this->getText($text);
     }
+
+    public function getTranslations() {
+        return $this->translations;
+    }
 }

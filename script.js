@@ -9,6 +9,12 @@ const CONSTANTS = {
     timeSteps: 15
 }
 
+const LNG = {
+    getText: (text) => window.calendarData && window.calendarData.translations &&
+        window.calendarData.translations[text] ?
+        window.calendarData.translations[text] : text,
+    echoText: (text) => document.write(this.getText(text))
+}
 /**
  * @typedef {Object} TimeSlot
  * @property {boolean} booked = Is it booked
@@ -143,7 +149,7 @@ function populateBTCalendar(year, month) {
                 if (isDayClickable(year, month, currentDay)) {
                     todayDiv.classList.add('clickable');
                     todayDiv.onclick = ()=>{
-                        showTimeSlotsModal(currentDay);
+                        showTimeSlotsModal(year, month, currentDay);
                     }
                 } else {
                     todayDiv.classList.add('disabled');
@@ -165,7 +171,7 @@ function populateBTCalendar(year, month) {
                 if (isDayClickable(year, month, currentDay)) {
                     div.classList.add('clickable');
                     div.onclick = ()=>{
-                        showTimeSlotsModal(currentDay);
+                        showTimeSlotsModal(year, month, currentDay);
                     }
                 } else {
                     div.classList.add('disabled');
@@ -249,7 +255,7 @@ function generateTimeSlots (bookedSlots, shift) {
     return slots;
 }
 
-function showTimeSlotsModal(day) {
+function showTimeSlotsModal(year, month, day) {
     // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
     // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
     const availableTimeSlotsDe = generateTimeSlots([], ['7:00', '12:00']);
@@ -271,12 +277,12 @@ function showTimeSlotsModal(day) {
 
     const deButton = document.createElement('button');
     deButton.className = "btn btn-primary";
-    deButton.innerHTML = "Vormittag";
+    deButton.innerHTML = LNG.getText('morning');
     deButton.onclick = ()=> showAvailableTimeSlots("de", availableTimeSlotsDe);
 
     const duButton = document.createElement('button');
     duButton.className = "btn btn-primary";
-    duButton.innerHTML = "Nachmittag";
+    duButton.innerHTML = LNG.getText('evening');
     duButton.onclick = ()=> showAvailableTimeSlots("du", availableTimeSlotsDu);
 
 
@@ -335,7 +341,7 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
             button.classList.add('free');
         }
         button.innerHTML = timeSlot.time;
-        button.onclick = ()=>alert("Ausgewählter Zeitraum: " + timeSlot.time);
+        button.onclick = ()=>alert(LNG.getText("selected_period") + ": " + timeSlot.time);
 
         slotsNode.appendChild(button);
     }
@@ -348,7 +354,7 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     const notes = document.createElement('textarea');
     notes.classList.add('slot-note');
     notes.setAttribute('rows', '3');
-    notes.setAttribute('placeholder', 'Bemerkung für Monteur!');
+    notes.setAttribute('placeholder', LNG.getText('note'));
     noteContainer.appendChild(notes);
     timeSlotsContainer.appendChild(noteContainer);
 
@@ -368,8 +374,8 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
         return line;
     }
 
-    summary.appendChild(getSummaryLine('Wartungs datum:', '21-12-2023'));
-    summary.appendChild(getSummaryLine('Wartungs zeitraum:', '07:30 - 09:00'));
+    summary.appendChild(getSummaryLine(LNG.getText('maintenance_date') + ':', '21-12-2023'));
+    summary.appendChild(getSummaryLine(LNG.getText('maintenance_time') + ':', '07:30 - 09:00'));
 
     timeSlotsContainer.appendChild(summary);
 
@@ -381,14 +387,14 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     // Fügen Sie den "Akzeptieren" Button hinzu
     const acceptButton = document.createElement('button');
     acceptButton.className = "btn btn-secondary";
-    acceptButton.innerHTML = "Zurück";
-    acceptButton.onclick = ()=>alert("Zurücked");
+    acceptButton.innerHTML = LNG.getText('back');
+    acceptButton.onclick = ()=>alert(LNG.getText('cancelled'));
 
     // Fügen Sie den "Akzeptieren" Button hinzu
     const backButton = document.createElement('button');
     backButton.className = "btn btn-primary";
-    backButton.innerHTML = "Buchung";
-    backButton.onclick = ()=>alert("Akzeptiert");
+    backButton.innerHTML = LNG.getText('book');
+    backButton.onclick = ()=>alert(LNG.getText('accepted'));
 
     // Fügen Sie den Akzeptieren Button dem Container hinzu
     buttons.appendChild(acceptButton);

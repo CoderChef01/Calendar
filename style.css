@@ -68,10 +68,21 @@ td.clickable, td.disabled {
     margin-bottom: 2em;
 }
 
-.calendar, .calendar_weekdays, .calendar_content, .head-menu {
+.head-image img {
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+.head-image > .image-wrapper {
+    width: 36%;
+    margin: 0 auto;
+}
+.calendar, .calendar_weekdays,
+.head-image,
+.calendar_content, .head-menu {
     max-width: 450px; }
 
-.calendar {
+.calendar,.head-image {
     margin: auto;
     font-weight: 400; }
 
