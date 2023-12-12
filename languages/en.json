@@ -25,5 +25,8 @@
   "th": "Th",
   "fr": "Fr",
   "sa": "Sa",
-  "su": "So"
+  "su": "So",
+  "minutes": "Minutes",
+  "please_select": "Please Select",
+  "are_you_sure": "Are you sure to apply booking?"
 }

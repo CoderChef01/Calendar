@@ -140,6 +140,7 @@ function populateBTCalendar(year, month) {
     };
     for (let i = 0; i < 6; i++) {
         for (let j = 1; j < 8; j++) {
+            const dayString = currentDay.toString();
             if (i === 0 && j < firstDayOfWeek) {
                 calendar_content.appendChild(createDiv('blank'));
             } else if(currentDay === today && month === now.getMonth() + 1) {
@@ -149,7 +150,7 @@ function populateBTCalendar(year, month) {
                 if (isDayClickable(year, month, currentDay)) {
                     todayDiv.classList.add('clickable');
                     todayDiv.onclick = ()=>{
-                        showTimeSlotsModal(year, month, currentDay);
+                        showTimeSlotsModal(year, month, dayString);
                     }
                 } else {
                     todayDiv.classList.add('disabled');
@@ -171,7 +172,7 @@ function populateBTCalendar(year, month) {
                 if (isDayClickable(year, month, currentDay)) {
                     div.classList.add('clickable');
                     div.onclick = ()=>{
-                        showTimeSlotsModal(year, month, currentDay);
+                        showTimeSlotsModal(year, month, dayString);
                     }
                 } else {
                     div.classList.add('disabled');
@@ -222,7 +223,9 @@ function getTimeFromDate (date) {
     return date.getHours() + ':' + date.getMinutes();
 }
 
+function getBookedSlotsForDay (year, month, day) {
 
+}
 
 /**
  * generateTimeSlots
@@ -433,7 +436,21 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
     const backButton = document.createElement('button');
     backButton.className = "btn btn-primary";
     backButton.innerHTML = LNG.getText('book');
-    backButton.onclick = ()=>alert(LNG.getText('accepted'));
+    backButton.onclick = () => {
+        if (!selectedTime) {
+            alert(LNG.getText('please_select'));
+            return;
+        }
+        //alert(LNG.getText('accepted'))
+        if (window.confirm(LNG.getText('are_you_sure'))) {
+            book({
+                wartzeit: selectedTime,
+                wartdatum: year + "-" + month + "-" + day,
+                notes: notes.value,
+                aufid: window.calendarData.aufid
+            })
+        }
+    };
 
     // Fügen Sie den Akzeptieren Button dem Container hinzu
     buttons.appendChild(acceptButton);
@@ -441,4 +458,35 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
     timeSlotsContainer.appendChild(buttons);
 }
 
+/**
+ * @typedef {Object} BookingData
+ * @property {string} wartdatum
+ * @property {string} wartzeit
+ * @property {string} aufid
+ */
 
+/**
+ * book
+ * @param {BookingData} data
+ */
+function book (data) {
+    const formData = new URLSearchParams();
+    for (const [key, value] of Object.entries(data)) {
+        formData.append(key, value);
+    }
+
+    fetch('#', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData,
+    })
+        .then(response => response.json()) // Assuming your PHP script returns JSON
+        .then(data => {
+            console.log('Response from server:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}

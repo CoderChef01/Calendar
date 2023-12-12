@@ -3,13 +3,61 @@ require(__DIR__ . '/lib/lang.php');
 require(__DIR__ . '/lib/sql.php');
 $lng = new Lang();
 $sqlMGR = new SQLMgr();
+$aufid = false;
 
-$bookings = $sqlMGR->get('SELECT `impdatum`, `kalkzeit` FROM `kunden`');
+$bookings = $sqlMGR->get('SELECT `wartdatum`, `wartzeit` FROM `kunden`');
 
 $globalCalendarData = array(
     'bookings' => $bookings,
-    'translations' => $lng->getTranslations()
+    'translations' => $lng->getTranslations(),
+    'loaded' => false,
+    'client' => 'No data',
+    'subject' => 'No data',
+    'date_from' => '11-12-2023',
+    'date_to' => '29-12-2023',
+    'work_length' => '90',
+    'wartdatum' => null,
+    'wartzeit' => null,
+    'post' => ''
 );
+if (isset($_POST['aufid']) && isset($_POST['wartdatum']) && isset($_POST['wartzeit'])) {
+    $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['aufid']);
+    $data = $sqlMGR->getRow('SELECT aufid, wartdatum, wartzeit FROM `kunden` WHERE aufid = ' .
+        $aufid);
+
+    if (is_array($data) && !trim($data['wartzeit'])) {
+        $wartdatum = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['wartdatum']);
+        $wartzeit = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['wartzeit']);
+        // We can proceed
+        if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\' WHERE aufid = '.$aufid)) {
+            // Done
+            $globalCalendarData['post'] = 'success';
+        } else {
+            $globalCalendarData['post'] = 'fail';
+        }
+    } else {
+        $globalCalendarData['post'] = 'invalid';
+    }
+}
+if (isset($_GET['aufid']) && $_GET['aufid']) {
+    $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_GET['aufid']);
+}
+
+if ($aufid) {
+    $globalCalendarData['aufid'] = $aufid;
+    $data = $sqlMGR->getRow('SELECT * FROM `kunden` WHERE aufid = ' .
+        mysqli_real_escape_string($sqlMGR->getConnection(), $_GET['aufid']));
+
+    if (is_array($data)) {
+        $globalCalendarData['client'] = $data['kuname'];
+        $globalCalendarData['subject'] = $data['objekt'];
+        $globalCalendarData['date_from'] = $data['wartdatumvon'];
+        $globalCalendarData['date_to'] = $data['wartdatumbis'];
+        $globalCalendarData['wartzeit'] = $data['wartzeit'];
+        $globalCalendarData['wartdatum'] = $data['wartdatum'];
+        $globalCalendarData['loaded'] = true;
+    }
+}
 
  $kuname = "Ügyfél neve";
  $objekt = "Objekt";
@@ -45,30 +93,32 @@ $globalCalendarData = array(
                     <img src="./images/dinkel_logo_pur.png" alt="Dinkel Bader Warme Klima"/>
                 </div>
             </div>
-            <!-- Kopfzeile Anfang -->
-            <ul class="hidden nav nav-pills nav-fill gap-2 p-1 small bg-primary rounded-5 shadow-sm" id="pillNav2" role="tablist" style="--bs-nav-link-color: var(--bs-white); --bs-nav-pills-link-active-color: var(--bs-primary); --bs-nav-pills-link-active-bg: var(--bs-white); height: 50px;">
-                <li class="nav-item">
-                    <span class="nav-link text-white"><?php $lng->echoText('client_name'); ?></span>
-                </li>
-                <?php if ($objekt !== $kuname): ?>
-                    <li class="nav-item">
-                        <span class="nav-link text-white"><?php echo $objekt; ?></span>
-                    </li>
-                <?php endif; ?>
-                <li class="nav-item">
-                    <span class="nav-link text-white"><?php echo $lng->getText('start_time') . ' - ' . $lng->getText('end_time'); ?></span>
-                </li>
-                <li class="nav-item">
-                    <span class="nav-link text-white"><?php $lng->echoText('work_length'); ?></span>
-                </li>
-            </ul>
             <!-- Kopfzeile Ende -->
             <div class="head-menu">
                 <div class="separator"></div>
-                <div class="line"><div class="menu"><?php $lng->echoText('client_name'); ?>:</div><div class="value">Thomas Braun</div></div>
-                <div class="line"><div class="menu"><?php $lng->echoText('object'); ?>:</div><div class="value">Festen Wohnung</div></div>
-                <div class="line"><div class="menu"><?php $lng->echoText('date'); ?>:</div><div class="value">11-12-2023 - 29-12-2023</div></div>
-                <div class="line"><div class="menu"><?php $lng->echoText('time'); ?>:</div><div class="value">10:00 - 11:30</div></div>
+                <div class="line">
+                    <div class="menu"><?php $lng->echoText('client_name'); ?>:</div>
+                    <div class="value"><?php echo $globalCalendarData['client']; ?></div>
+                </div>
+                <div class="line">
+                    <div class="menu"><?php $lng->echoText('object'); ?>:</div>
+                    <div class="value"><?php echo $globalCalendarData['subject']; ?></div>
+                </div>
+                <div class="line">
+                    <div class="menu"><?php $lng->echoText('date'); ?>:</div>
+                    <div class="value"><?php echo $globalCalendarData['date_from'] . " - " . $globalCalendarData['date_to']; ?></div>
+                </div>
+                <div class="line">
+                    <div class="menu"><?php $lng->echoText('time'); ?>:</div>
+                    <div class="value">
+                    <?php
+                        if ($globalCalendarData['wartdatum'] && $globalCalendarData['wartzeit']) {
+                            echo$globalCalendarData['wartdatum'] . " " . $globalCalendarData['wartzeit'];
+                        } else {
+                            echo '90 ' . $lng->getText('minutes');
+                        }
+                     ?></div>
+                </div>
             </div>
 
             <!-- Kalender Anfang -->
