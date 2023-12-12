@@ -351,6 +351,9 @@ button.switch-month:hover {
 #timeSlotsContainer .slot-parent > button.booked {
     background-color: #f0364b;
 }
+#timeSlotsContainer .slot-parent > button.planned {
+    background-color: #d29f00;
+}
 
 .slot-note-wrapper {
     margin: 14px 5px;

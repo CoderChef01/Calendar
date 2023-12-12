@@ -140,6 +140,7 @@ function populateBTCalendar(year, month) {
     };
     for (let i = 0; i < 6; i++) {
         for (let j = 1; j < 8; j++) {
+            const dayString = currentDay.toString();
             if (i === 0 && j < firstDayOfWeek) {
                 calendar_content.appendChild(createDiv('blank'));
             } else if(currentDay === today && month === now.getMonth() + 1) {
@@ -149,7 +150,7 @@ function populateBTCalendar(year, month) {
                 if (isDayClickable(year, month, currentDay)) {
                     todayDiv.classList.add('clickable');
                     todayDiv.onclick = ()=>{
-                        showTimeSlotsModal(year, month, currentDay);
+                        showTimeSlotsModal(year, month, dayString);
                     }
                 } else {
                     todayDiv.classList.add('disabled');
@@ -171,7 +172,7 @@ function populateBTCalendar(year, month) {
                 if (isDayClickable(year, month, currentDay)) {
                     div.classList.add('clickable');
                     div.onclick = ()=>{
-                        showTimeSlotsModal(year, month, currentDay);
+                        showTimeSlotsModal(year, month, dayString);
                     }
                 } else {
                     div.classList.add('disabled');
@@ -212,6 +213,43 @@ function getTimedDate (time) {
     return date;
 }
 
+
+/**
+ * getTimeFromDate
+ * @param {Date} date
+ * @returns {string}
+ */
+function getTimeFromDate (date) {
+    return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
+}
+
+function getBookedSlotsForDay (year, month, day) {
+    const bookingArray = window.calendarData.bookings || [];
+    const todayData = bookingArray.filter(booking => booking.wartdatum === year + "-" + month + "-" + day);
+
+    const slots = [];
+
+    todayData.forEach(function (booking) {
+        const time = booking.wartzeit;
+
+        const date = getTimedDate(time);
+        let i = -90;
+        addMinutes(date, i);
+
+        if (!slots.includes(time)) {
+            slots.push(time);
+        }
+        while (i < 90) {
+            addMinutes(date, CONSTANTS.timeSteps);
+            const pastTime = getTimeFromDate(date);
+            if (!slots.includes(pastTime)) {
+                slots.push(pastTime);
+            }
+            i += CONSTANTS.timeSteps;
+        }
+    });
+    return slots;
+}
 
 /**
  * generateTimeSlots
@@ -258,8 +296,9 @@ function generateTimeSlots (bookedSlots, shift) {
 function showTimeSlotsModal(year, month, day) {
     // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
     // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
-    const availableTimeSlotsDe = generateTimeSlots([], ['7:00', '12:00']);
-    const availableTimeSlotsDu = generateTimeSlots([], ['13:00', '16:00']);
+    const todaySlots = getBookedSlotsForDay(year, month, day);
+    const availableTimeSlotsDe = generateTimeSlots(todaySlots, ['7:00', '12:00']);
+    const availableTimeSlotsDu = generateTimeSlots(todaySlots, ['13:00', '16:00']);
 
     const timeSlotsModal = document.getElementById('timeSlotsModal');
     if (!timeSlotsModal) {
@@ -278,12 +317,12 @@ function showTimeSlotsModal(year, month, day) {
     const deButton = document.createElement('button');
     deButton.className = "btn btn-primary";
     deButton.innerHTML = LNG.getText('morning');
-    deButton.onclick = ()=> showAvailableTimeSlots("de", availableTimeSlotsDe);
+    deButton.onclick = ()=> showAvailableTimeSlots("de", availableTimeSlotsDe, year, month, day);
 
     const duButton = document.createElement('button');
     duButton.className = "btn btn-primary";
     duButton.innerHTML = LNG.getText('evening');
-    duButton.onclick = ()=> showAvailableTimeSlots("du", availableTimeSlotsDu);
+    duButton.onclick = ()=> showAvailableTimeSlots("du", availableTimeSlotsDu, year, month, day);
 
 
 
@@ -316,7 +355,7 @@ function showTimeSlotsModal(year, month, day) {
  * @param {'de'|'du'} timeType - Current Type of the Time
  * @param {TimeSlot[]} availableTimeSlots - List of available time slots for the calendar
  */
-function showAvailableTimeSlots(timeType, availableTimeSlots) {
+function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) {
     // Holen Sie sich den Container für die Zeitfenster
     const timeSlotsContainer = document.getElementById('timeSlotsContainer');
     if (!timeSlotsContainer) {
@@ -328,11 +367,20 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
 
     const slotsNode = document.createElement('div');
     slotsNode.classList.add('slot-parent');
+    const getSummaryLine = (key, value)=> {
+        const line = document.createElement('div');
+        line.classList.add('line');
+        line.innerHTML = '<div class="menu">'+key+'</div><div class="value">'+value+'</div>';
 
+        return line;
+    }
+    const maintenance_time = getSummaryLine(LNG.getText('maintenance_time') + ':', '07:30 - 09:00');
+    let selectedTime;
     // Zeigen Sie die gefilterten Zeitfenster an
     for (let i = 0; i < availableTimeSlots.length; i++) {
         const timeSlot = availableTimeSlots[i];
         const button = document.createElement('button');
+        button.id = "time_b_" + i;
         button.classList.add('btn');
         button.classList.add('btn-primary');
         if (timeSlot.booked) {
@@ -341,7 +389,35 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
             button.classList.add('free');
         }
         button.innerHTML = timeSlot.time;
-        button.onclick = ()=>alert(LNG.getText("selected_period") + ": " + timeSlot.time);
+        button.onclick = ()=> {
+            if (timeSlot.booked) {
+                return;
+            }
+            selectedTime = timeSlot.time;
+
+            const value = maintenance_time.querySelector('.value');
+            if (value) {
+                // const minTime = timeSlot.time;
+                const minDate = getTimedDate(timeSlot.time);
+                const maxDate = addMinutes(getTimedDate(timeSlot.time),
+                    CONSTANTS.workLength)
+                const maxTime = getTimeFromDate(maxDate);
+                value.innerHTML = timeSlot.time + " - " + maxTime;
+                for (let j = 0; j < availableTimeSlots.length; j++) {
+                    const slotTime = availableTimeSlots[j];
+                    const slotDate = getTimedDate(slotTime.time);
+                    const slotButton = slotsNode.querySelector('#time_b_' + j);
+
+                    if (slotButton && minDate <= slotDate && slotDate <= maxDate) {
+                        slotButton.classList.add('planned');
+                    } else if (slotButton) {
+                        slotButton.classList.remove('planned');
+                    }
+
+                }
+            }
+            //alert(LNG.getText("selected_period") + ": " + timeSlot.time)
+        };
 
         slotsNode.appendChild(button);
     }
@@ -366,16 +442,10 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
 
     const summary = document.createElement('div');
     summary.classList.add('summary');
-    const getSummaryLine = (key, value)=> {
-        const line = document.createElement('div');
-        line.classList.add('line');
-        line.innerHTML = '<div class="menu">'+key+'</div><div class="value">'+value+'</div>';
 
-        return line;
-    }
 
-    summary.appendChild(getSummaryLine(LNG.getText('maintenance_date') + ':', '21-12-2023'));
-    summary.appendChild(getSummaryLine(LNG.getText('maintenance_time') + ':', '07:30 - 09:00'));
+    summary.appendChild(getSummaryLine(LNG.getText('maintenance_date') + ':', day + '-' + month + '-' + year));
+    summary.appendChild(maintenance_time);
 
     timeSlotsContainer.appendChild(summary);
 
@@ -394,7 +464,21 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     const backButton = document.createElement('button');
     backButton.className = "btn btn-primary";
     backButton.innerHTML = LNG.getText('book');
-    backButton.onclick = ()=>alert(LNG.getText('accepted'));
+    backButton.onclick = () => {
+        if (!selectedTime) {
+            alert(LNG.getText('please_select'));
+            return;
+        }
+        //alert(LNG.getText('accepted'))
+        if (window.confirm(LNG.getText('are_you_sure'))) {
+            book({
+                wartzeit: selectedTime,
+                wartdatum: year + "-" + month + "-" + day,
+                notes: notes.value,
+                aufid: window.calendarData.aufid
+            })
+        }
+    };
 
     // Fügen Sie den Akzeptieren Button dem Container hinzu
     buttons.appendChild(acceptButton);
@@ -402,4 +486,35 @@ function showAvailableTimeSlots(timeType, availableTimeSlots) {
     timeSlotsContainer.appendChild(buttons);
 }
 
+/**
+ * @typedef {Object} BookingData
+ * @property {string} wartdatum
+ * @property {string} wartzeit
+ * @property {string} aufid
+ */
 
+/**
+ * book
+ * @param {BookingData} data
+ */
+function book (data) {
+    const formData = new URLSearchParams();
+    for (const [key, value] of Object.entries(data)) {
+        formData.append(key, value);
+    }
+
+    fetch('#', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData,
+    })
+        .then(response => response.json()) // Assuming your PHP script returns JSON
+        .then(data => {
+            console.log('Response from server:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
