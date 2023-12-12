@@ -220,11 +220,35 @@ function getTimedDate (time) {
  * @returns {string}
  */
 function getTimeFromDate (date) {
-    return date.getHours() + ':' + date.getMinutes();
+    return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
 }
 
 function getBookedSlotsForDay (year, month, day) {
+    const bookingArray = window.calendarData.bookings || [];
+    const todayData = bookingArray.filter(booking => booking.wartdatum === year + "-" + month + "-" + day);
 
+    const slots = [];
+
+    todayData.forEach(function (booking) {
+        const time = booking.wartzeit;
+
+        const date = getTimedDate(time);
+        let i = -90;
+        addMinutes(date, i);
+
+        if (!slots.includes(time)) {
+            slots.push(time);
+        }
+        while (i < 90) {
+            addMinutes(date, CONSTANTS.timeSteps);
+            const pastTime = getTimeFromDate(date);
+            if (!slots.includes(pastTime)) {
+                slots.push(pastTime);
+            }
+            i += CONSTANTS.timeSteps;
+        }
+    });
+    return slots;
 }
 
 /**
@@ -272,8 +296,9 @@ function generateTimeSlots (bookedSlots, shift) {
 function showTimeSlotsModal(year, month, day) {
     // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
     // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
-    const availableTimeSlotsDe = generateTimeSlots([], ['7:00', '12:00']);
-    const availableTimeSlotsDu = generateTimeSlots([], ['13:00', '16:00']);
+    const todaySlots = getBookedSlotsForDay(year, month, day);
+    const availableTimeSlotsDe = generateTimeSlots(todaySlots, ['7:00', '12:00']);
+    const availableTimeSlotsDu = generateTimeSlots(todaySlots, ['13:00', '16:00']);
 
     const timeSlotsModal = document.getElementById('timeSlotsModal');
     if (!timeSlotsModal) {
@@ -365,6 +390,9 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
         }
         button.innerHTML = timeSlot.time;
         button.onclick = ()=> {
+            if (timeSlot.booked) {
+                return;
+            }
             selectedTime = timeSlot.time;
 
             const value = maintenance_time.querySelector('.value');
