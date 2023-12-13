@@ -20,25 +20,55 @@ $globalCalendarData = array(
     'wartzeit' => null,
     'post' => ''
 );
-if (isset($_POST['aufid']) && isset($_POST['wartdatum']) && isset($_POST['wartzeit'])) {
-    $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['aufid']);
-    $data = $sqlMGR->getRow('SELECT aufid, wartdatum, wartzeit FROM `kunden` WHERE aufid = ' .
-        $aufid);
+if (isset($_POST['aufid'])) {
 
-    if (is_array($data) && !trim($data['wartzeit'])) {
+    if (!$_POST['aufid']) {
+        http_response_code(400);
+        echo "Bad Request: aufid is needed";
+        exit(400);
+    }
+
+    if(isset($_POST['wartdatum']) && isset($_POST['wartzeit'])) {
+        $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['aufid']);
+        if (!$aufid || $aufid === 'undefined') {
+            http_response_code(400);
+            echo "Bad Request: aufid is needed";
+            exit(400);
+        }
+        $data = $sqlMGR->getRow('SELECT aufid, wartdatum, wartzeit FROM `kunden` WHERE aufid = ' . $aufid);
+        if (!is_array($data)) {
+            http_response_code(404);
+            echo "Resource not found for aufid";
+            exit(404);
+        }
+
+        if (trim($data['wartzeit'])) {
+            http_response_code(410);
+            echo "Gone: The resource no longer available";
+            exit(410);
+        }
+
         $wartdatum = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['wartdatum']);
         $wartzeit = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['wartzeit']);
         // We can proceed
         if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\' WHERE aufid = '.$aufid)) {
             // Done
-            $globalCalendarData['post'] = 'success';
+            http_response_code(201);
+            echo "Added successfully.";
+            exit(201);
+
         } else {
-            $globalCalendarData['post'] = 'fail';
+            http_response_code(500);
+            echo "Internal Server Error: SQL Execution. ID: ".$sqlMGR->lastErrno." Msg: ".$sqlMGR->lastError;
+            exit(500);
         }
     } else {
-        $globalCalendarData['post'] = 'invalid';
+        http_response_code(400);
+        echo "Bad Request: wartdatum or wartzeit is missing.";
+        exit(400);
     }
 }
+
 if (isset($_GET['aufid']) && $_GET['aufid']) {
     $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_GET['aufid']);
 }
