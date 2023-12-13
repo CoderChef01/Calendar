@@ -80,6 +80,97 @@ document.body.onclick = (e) =>{
     }
 }
 
+function BSModal (options) {
+    if (!options) options = {};
+    let mainModal = document.querySelector('#bsModal');
+    if (mainModal) {
+        mainModal.outerHTML = '';
+    }
+    const modalClose = (button, index) => {
+        if (currentModal) {
+            currentModal.close();
+        } else {
+            mainModal.outerHTML = '';
+        }
+        if (typeof options.onclose === "function") {
+            options.onclose(button, index);
+        }
+    };
+    mainModal = document.createElement('div');
+    mainModal.id = 'bsModal';
+    mainModal.className = 'modal fade';
+
+    const dialog = document.createElement('div');
+    dialog.classList.add('modal-dialog');
+    const content = document.createElement('div');
+    content.classList.add('modal-content');
+
+    const header  = document.createElement('div');
+    header.classList.add('modal-header');
+    const title = document.createElement('h5');
+    title.classList.add('modal-title');
+    title.innerHTML = options.title || 'Modal';
+    const close = document.createElement('button');
+    close.setAttribute('type', 'button');
+    close.classList.add('btn-close');
+    close.onclick = ()=>modalClose();
+    header.appendChild(title);
+    header.appendChild(close);
+
+    const body  = document.createElement('div');
+    body.classList.add('modal-body');
+
+    if (options.body instanceof Node || options.body instanceof Element) {
+        body.appendChild(options.body);
+    } else if (typeof options.body === "string") {
+        body.innerHTML = options.body;
+    }
+
+    content.appendChild(header);
+    content.appendChild(body);
+
+    if (Array.isArray(options.buttons)) {
+        const footer = document.createElement('div');
+        footer.classList.add('modal-footer');
+
+        options.buttons.forEach((button, index)=> {
+            if (!button) {
+                return;
+            }
+            const btn = document.createElement('button');
+            btn.setAttribute('type', 'button');
+            btn.classList.add('btn');
+            btn.classList.add('btn-primary');
+            if (typeof button === 'string') {
+                btn.innerHTML = button;
+                btn.onclick = ()=> modalClose(button, index);
+            } else if (typeof button === 'object') {
+                btn.innerHTML = button.innerHTML || button.value || button.text || 'OK';
+                if (typeof options.onclick === 'function') {
+                    btn.onclick = ()=>options.onclick(mainModal);
+                } else {
+                    btn.onclick = ()=> modalClose(button, index);
+                }
+                if (button.className) {
+                    btn.className = button.className;
+                }
+            }
+
+            footer.appendChild(btn);
+        })
+        content.appendChild(footer);
+    }
+
+
+    dialog.appendChild(content);
+
+    mainModal.appendChild(dialog);
+    document.body.appendChild(mainModal);
+
+    showModalFor(mainModal);
+
+}
+
 updateCalendar();
 
 const prevMonthBtn = document.getElementById('prevMonthBtn');
