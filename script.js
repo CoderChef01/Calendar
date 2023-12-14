@@ -253,19 +253,19 @@ function populateBTCalendar(year, month) {
     for (let i = 0; i < 6; i++) {
         for (let j = 1; j < 8; j++) {
             const dayString = currentDay.toString();
+            const className = getTodayClass(year, month, currentDay);
             if (i === 0 && j < firstDayOfWeek) {
                 calendar_content.appendChild(createDiv('blank'));
             } else if(currentDay === today && month === now.getMonth() + 1) {
                 const todayDiv = createDiv('today');
                 todayDiv.style.color =  "rgb(0, 189, 170)"
                 todayDiv.innerHTML = currentDay.toString();
-                if (isDayClickable(year, month, currentDay)) {
-                    todayDiv.classList.add('clickable');
+                todayDiv.classList.add(className);
+
+                if (className === 'clickable') {
                     todayDiv.onclick = ()=>{
                         showTimeSlotsModal(year, month, dayString);
                     }
-                } else {
-                    todayDiv.classList.add('disabled');
                 }
                 calendar_content.appendChild(todayDiv);
                 currentDay++;
@@ -278,14 +278,12 @@ function populateBTCalendar(year, month) {
             } else if (currentDay <= numDays) {
                 const div = document.createElement('div');
                 div.innerHTML = currentDay.toString();
+                div.classList.add(className);
 
-                if (isDayClickable(year, month, currentDay)) {
-                    div.classList.add('clickable');
+                if (className === 'clickable') {
                     div.onclick = ()=>{
                         showTimeSlotsModal(year, month, dayString);
                     }
-                } else {
-                    div.classList.add('disabled');
                 }
                 calendar_content.appendChild(div);
                 currentDay++;
@@ -298,12 +296,25 @@ function populateBTCalendar(year, month) {
 
 function isDayClickable(year, month, day) {
     let currentDay = new Date(year, month - 1, day);
-    console.info(currentDay);
     let dayOfWeek = currentDay.getDay();
     return dayOfWeek !== 0 && dayOfWeek !== 6;
 }
 
+function getTodayClass(year, month, day) {
+    const currentDay = new Date(year, month - 1, day);
+    const dateTo = new Date(calendarData.date_to);
+    const dayOfWeek = currentDay.getDay();
+    const isWeekday = dayOfWeek !== 0 && dayOfWeek !== 6;
+    const isBefore = currentDay <= dateTo;
 
+    if (isWeekday && isBefore) {
+        return 'clickable';
+    } else if (isWeekday && !isBefore) {
+        return 'disabled';
+    } else if (!isWeekday) {
+        return 'week_end';
+    }
+}
 /**
  * addMinutes
  * @param {Date} date - The Date object we want to modify

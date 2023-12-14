@@ -149,6 +149,7 @@ td.clickable, td.disabled {
 
 .calendar_content div.clickable:after,
 .calendar_content div.past-date:after,
+.calendar_content div.week_end:after,
 .calendar_content div.disabled:after{
     position: absolute;
     top: 50%;
@@ -229,7 +230,7 @@ button.switch-month:hover {
 .calendar_content div.clickable {
     color: #616060;
 }
-.calendar_content div.disabled,
+.calendar_content div.week_end,
 .calendar_weekdays > div.weekend
 {
     color: #ff5d5d
