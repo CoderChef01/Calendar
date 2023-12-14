@@ -24,7 +24,7 @@ if (isset($_POST['aufid'])) {
 
     if (!$_POST['aufid']) {
         http_response_code(400);
-        echo "Bad Request: aufid is needed";
+        echo $lng->getText('http_400');
         exit(400);
     }
 
@@ -32,39 +32,41 @@ if (isset($_POST['aufid'])) {
         $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['aufid']);
         if (!$aufid || $aufid === 'undefined') {
             http_response_code(400);
-            echo "Bad Request: aufid is needed";
+            echo $lng->getText('http_400');
             exit(400);
         }
         $data = $sqlMGR->getRow('SELECT aufid, wartdatum, wartzeit FROM `kunden` WHERE aufid = ' . $aufid);
         if (!is_array($data)) {
             http_response_code(404);
-            echo "Resource not found for aufid";
+            echo $lng->getText('http_404');
             exit(404);
         }
 
         if (trim($data['wartzeit'])) {
             http_response_code(410);
-            echo "Gone: The resource no longer available";
+            echo $lng->getText('http_410');
             exit(410);
         }
 
         $wartdatum = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['wartdatum']);
         $wartzeit = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['wartzeit']);
+        // TODO: Notes are here if you need
+        $notes = mysqli_real_escape_string($sqlMGR->getConnection(), isset($_POST['notes']) ? $_POST['notes'] : '');
         // We can proceed
-        if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\' WHERE aufid = '.$aufid)) {
+        if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\', mailzust=\'3\' WHERE aufid = '.$aufid)) {
             // Done
             http_response_code(201);
-            echo "Added successfully.";
+            echo $lng->getText('http_201');
             exit(201);
 
         } else {
             http_response_code(500);
-            echo "Internal Server Error: SQL Execution. ID: ".$sqlMGR->lastErrno." Msg: ".$sqlMGR->lastError;
+            echo $lng->getText('http_500') . " ID: ".$sqlMGR->lastErrno." Msg: ".$sqlMGR->lastError;
             exit(500);
         }
     } else {
         http_response_code(400);
-        echo "Bad Request: wartdatum or wartzeit is missing.";
+        echo $lng->getText('http_400');
         exit(400);
     }
 }
@@ -159,13 +161,13 @@ if ($aufid) {
                     <button id="nextMonthBtn" class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
                 </div>
                 <div class="calendar_weekdays">
-                    <div><?php $lng->getText('mo'); ?></div>
-                    <div><?php $lng->getText('tu'); ?></div>
-                    <div><?php $lng->getText('we'); ?></div>
-                    <div><?php $lng->getText('th'); ?></div>
-                    <div><?php $lng->getText('fr'); ?></div>
-                    <div class="weekend"><?php $lng->getText('sa'); ?></div>
-                    <div class="weekend"><?php $lng->getText('so'); ?></div>
+                    <div><?php $lng->echoText('mo'); ?></div>
+                    <div><?php $lng->echoText('tu'); ?></div>
+                    <div><?php $lng->echoText('we'); ?></div>
+                    <div><?php $lng->echoText('th'); ?></div>
+                    <div><?php $lng->echoText('fr'); ?></div>
+                    <div class="weekend"><?php $lng->echoText('sa'); ?></div>
+                    <div class="weekend"><?php $lng->echoText('su'); ?></div>
                 </div>
                 <div class="calendar_content">
                     <!-- Inhalt des Kalenders -->
