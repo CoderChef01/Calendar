@@ -28,5 +28,8 @@
   "su": "So",
   "minutes": "Minuten",
   "please_select": "Please Select",
-  "are_you_sure": "Are you sure to apply booking?"
+  "are_you_sure": "Are you sure to apply booking?",
+  "successful_booking": "Successful Booking",
+  "booking_issue": "We had an issue during booking:",
+  "yes": "Yes"
 }

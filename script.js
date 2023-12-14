@@ -36,7 +36,7 @@ function moveDateByMonth (offset) {
     }
 }
 
-let currentModal;
+let currentModals = [];
 function showModalFor(node) {
     if(!node) {
         return;
@@ -48,10 +48,12 @@ function showModalFor(node) {
         node.style.opacity = '1';
     },20);
 
-    const backDropContainer = document.createElement('div');
+    let backDropContainer = document.createElement('div');
     backDropContainer.className = "modal-backdrop fade show";
     if(!document.querySelector('.modal-backdrop.fade.show')) {
         document.body.appendChild(backDropContainer);
+    } else {
+        backDropContainer = null;
     }
 
     const closeBtn = node.querySelector('.modal-header .btn-close');
@@ -59,7 +61,9 @@ function showModalFor(node) {
     const close = () => {
         node.style.opacity = '0';
         setTimeout(()=> {
-            backDropContainer.outerHTML = '';
+            if (backDropContainer) {
+                backDropContainer.outerHTML = '';
+            }
             node.classList.remove('show');
             node.style.display = null;
         }, 150);
@@ -67,17 +71,125 @@ function showModalFor(node) {
     if (closeBtn) {
         closeBtn.onclick = close;
     }
-    currentModal = {
+    currentModals.push({
         close: close,
         id: node.id,
         node: node
+    });
+}
+
+document.body.onclick = (e) => {
+    if (currentModals.length) {
+        let currentModal = null;
+        currentModals = currentModals.filter((modal) => {
+            if (modal && modal.node === e.target) {
+                currentModal = modal;
+                return false;
+            } else {
+                return true;
+            }
+        });
+        if (currentModal) {
+            currentModal.close();
+        }
     }
 }
 
-document.body.onclick = (e) =>{
-    if (currentModal && currentModal.node === e.target) {
-        currentModal.close();
+function BSModal (options) {
+    if (!options) options = {};
+    let mainModal = document.querySelector('#bsModal');
+    if (mainModal) {
+        mainModal.outerHTML = '';
     }
+    const modalClose = (button, index) => {
+        if (currentModals.length) {
+            const currentModal = currentModals.pop();
+            if (currentModal) {
+                currentModal.close();
+            }
+        }
+        mainModal.outerHTML = '';
+        if (typeof options.onclose === "function") {
+            options.onclose(button, index);
+        }
+    };
+    mainModal = document.createElement('div');
+    mainModal.id = 'bsModal';
+    mainModal.className = 'modal fade';
+
+    const dialog = document.createElement('div');
+    dialog.classList.add('modal-dialog');
+    const content = document.createElement('div');
+    content.classList.add('modal-content');
+    content.style.width = 'auto';
+
+    const header  = document.createElement('div');
+    header.classList.add('modal-header');
+    const title = document.createElement('h5');
+    title.classList.add('modal-title');
+    title.innerHTML = options.title || 'Modal';
+    const close = document.createElement('button');
+    close.setAttribute('type', 'button');
+    close.classList.add('btn-close');
+    close.onclick = ()=>modalClose();
+    header.appendChild(title);
+    header.appendChild(close);
+
+    const body  = document.createElement('div');
+    body.classList.add('modal-body');
+
+    if (options.body instanceof Node || options.body instanceof Element) {
+        body.appendChild(options.body);
+    } else if (typeof options.body === "string") {
+        body.innerHTML = options.body;
+    }
+
+    content.appendChild(header);
+    content.appendChild(body);
+
+    if (Array.isArray(options.buttons)) {
+        const footer = document.createElement('div');
+        footer.classList.add('modal-footer');
+
+        options.buttons.forEach((button, index)=> {
+            if (!button) {
+                return;
+            }
+            const btn = document.createElement('button');
+            btn.setAttribute('type', 'button');
+            btn.classList.add('btn');
+            btn.classList.add('btn-primary');
+            if (typeof button === 'string') {
+                btn.innerHTML = button;
+                btn.onclick = ()=> modalClose(button, index);
+            } else if (typeof button === 'object') {
+                btn.innerHTML = button.innerHTML || button.value || button.text || 'OK';
+                if (typeof button.onclick === 'function') {
+                    btn.onclick = () => {
+                        modalClose(button, index);
+                        button.onclick(mainModal);
+                    };
+                } else {
+                    btn.onclick = ()=> modalClose(button, index);
+                }
+                if (button.className) {
+                    btn.className = button.className;
+                }
+            }
+
+            footer.appendChild(btn);
+        })
+        content.appendChild(footer);
+    }
+
+
+    dialog.appendChild(content);
+
+    mainModal.appendChild(dialog);
+    document.body.appendChild(mainModal);
+
+    showModalFor(mainModal);
+
 }
 
 updateCalendar();
@@ -470,14 +582,27 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
             return;
         }
         //alert(LNG.getText('accepted'))
-        if (window.confirm(LNG.getText('are_you_sure'))) {
-            book({
-                wartzeit: selectedTime,
-                wartdatum: year + "-" + month + "-" + day,
-                notes: notes.value,
-                aufid: window.calendarData.aufid
-            })
-        }
+        const modalConfig = {
+            title: 'Confirmation',
+            body: LNG.getText('are_you_sure'),
+            buttons: [{
+                innerHTML: LNG.getText('yes'),
+                onclick: () => {
+                    console.info('Executing booking...');
+                    book({
+                        wartzeit: selectedTime,
+                        wartdatum: year + "-" + month + "-" + day,
+                        notes: notes.value,
+                        aufid: window.calendarData.aufid
+                    })
+                }
+            }, {
+                innerHTML: LNG.getText('back'),
+                className: 'btn btn-secondary'
+            }]
+        };
+        BSModal(modalConfig);
+
     };
 
     // Fügen Sie den Akzeptieren Button dem Container hinzu
@@ -494,7 +619,7 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
  */
 
 /**
- * book
+ * books
  * @param {BookingData} data
  */
 function book (data) {
@@ -502,7 +627,11 @@ function book (data) {
     for (const [key, value] of Object.entries(data)) {
         formData.append(key, value);
     }
-
+    const modalConfig = {
+        title: 'Result',
+        body: null,
+        buttons: ['OK']
+    }
     fetch('#', {
         method: 'POST',
         headers: {
@@ -510,11 +639,21 @@ function book (data) {
         },
         body: formData,
     })
-        .then(response => response.json()) // Assuming your PHP script returns JSON
-        .then(data => {
-            console.log('Response from server:', data);
+        .then(async response => {
+            const value = await response.text();
+            switch (response.status) {
+                case 200:
+                    modalConfig.body = LNG.getText('successful_booking');
+                    BSModal(modalConfig);
+                    break;
+                default:
+                    modalConfig.body = LNG.getText('booking_issue') + '<br />'+value;
+                    BSModal(modalConfig);
+            }
         })
         .catch(error => {
+            modalConfig.body = LNG.getText('booking_issue') + '<br />'+error.message;
+            BSModal(modalConfig);
             console.error('Error:', error);
         });
 }

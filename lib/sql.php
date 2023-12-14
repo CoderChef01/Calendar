@@ -4,8 +4,8 @@ $configs = include(__DIR__ . '/../config.php');
 
 class SQLMgr {
     private $connection;
-    protected string $lastError;
-    protected int $lastErrno;
+    public string $lastError;
+    public int $lastErrno;
     public function __construct()
     {
         global $configs;
