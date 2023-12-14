@@ -22,8 +22,20 @@ $globalCalendarData = array(
     'wartzeit' => null,
     'post' => '',
     'monteur' => 'default',
-    'monteuren'=> $configs['monteuren']
+    'monteuren'=> $configs['monteuren'],
+    'feiertags' => array()
 );
+
+$freeDayQuery = $sqlMGR->get('SELECT ftdatum as datum FROM `feiertag`');
+if ($freeDayQuery) {
+    foreach ($freeDayQuery as $object) {
+        if (isset($object['datum'])) {
+            $globalCalendarData['feiertags'][] = $object['datum'];
+        }
+    }
+}
+
+
 if (isset($_POST['aufid'])) {
 
     if (!$_POST['aufid']) {

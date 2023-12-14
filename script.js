@@ -6,7 +6,9 @@ const CONSTANTS = {
     },
     now: new Date(),
     workLength: 90,
-    timeSteps: 15
+    timeSteps: 15,
+    freeDays: Array.isArray(calendarData.feiertags) ?
+        calendarData.feiertags.map(string => new Date(string)) : []
 }
 
 const LNG = {
@@ -307,13 +309,20 @@ function getTodayClass(year, month, day) {
     const isWeekday = dayOfWeek !== 0 && dayOfWeek !== 6;
     const isBefore = currentDay <= dateTo;
     const selectedDayShift = calendarData.monteuren[calendarData.monteur][dayOfWeek];
+    const isFreeDay = CONSTANTS.freeDays.find(date=> {
+        return date.getFullYear() === currentDay.getFullYear() &&
+            date.getMonth() === currentDay.getMonth() &&
+            date.getDate() === currentDay.getDate();
+    });
 
-    if (isWeekday && isBefore && selectedDayShift) {
+    if (isWeekday && isBefore && selectedDayShift && !isFreeDay) {
         return 'clickable';
     } else if (isWeekday && !isBefore) {
         return 'disabled';
-    }  else if (isWeekday && !selectedDayShift) {
+    } else if (isWeekday && !selectedDayShift) {
         return 'disabled';
+    } else if (isWeekday && isFreeDay) {
+        return 'week_end';
     } else if (!isWeekday) {
         return 'week_end';
     }
