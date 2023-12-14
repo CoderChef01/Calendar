@@ -305,9 +305,12 @@ function isDayClickable(year, month, day) {
 function getTodayClass(year, month, day) {
     const currentDay = new Date(year, month - 1, day);
     const dateTo = new Date(calendarData.date_to);
+    const dateFrom = new Date(calendarData.date_from);
+    dateFrom.setHours(0);
     const dayOfWeek = currentDay.getDay();
     const isWeekday = dayOfWeek !== 0 && dayOfWeek !== 6;
     const isBefore = currentDay <= dateTo;
+    const isAfter = currentDay >= dateFrom;
     const selectedDayShift = calendarData.monteuren[calendarData.monteur][dayOfWeek];
     const isFreeDay = CONSTANTS.freeDays.find(date=> {
         return date.getFullYear() === currentDay.getFullYear() &&
@@ -315,9 +318,9 @@ function getTodayClass(year, month, day) {
             date.getDate() === currentDay.getDate();
     });
 
-    if (isWeekday && isBefore && selectedDayShift && !isFreeDay) {
+    if (isWeekday && isBefore && selectedDayShift && !isFreeDay && isAfter) {
         return 'clickable';
-    } else if (isWeekday && !isBefore) {
+    } else if (isWeekday && (!isBefore || !isAfter)) {
         return 'disabled';
     } else if (isWeekday && !selectedDayShift) {
         return 'disabled';
