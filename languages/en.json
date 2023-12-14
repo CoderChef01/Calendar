@@ -31,5 +31,10 @@
   "are_you_sure": "Are you sure to apply booking?",
   "successful_booking": "Successful Booking",
   "booking_issue": "We had an issue during booking:",
-  "yes": "Yes"
+  "yes": "Yes",
+  "http_400": "Bad Request: aufid, wartdatum and wartzeit are needed",
+  "http_404": "Resource not found for aufid",
+  "http_410": "Gone: Booking is already saved with this URL",
+  "http_201": "Added successfully.",
+  "http_500": "Internal Server Error: SQL Execution."
 }

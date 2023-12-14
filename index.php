@@ -24,7 +24,7 @@ if (isset($_POST['aufid'])) {
 
     if (!$_POST['aufid']) {
         http_response_code(400);
-        echo "Bad Request: aufid is needed";
+        echo $lng->getText('http_400');
         exit(400);
     }
 
@@ -32,19 +32,19 @@ if (isset($_POST['aufid'])) {
         $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['aufid']);
         if (!$aufid || $aufid === 'undefined') {
             http_response_code(400);
-            echo "Bad Request: aufid is needed";
+            echo $lng->getText('http_400');
             exit(400);
         }
         $data = $sqlMGR->getRow('SELECT aufid, wartdatum, wartzeit FROM `kunden` WHERE aufid = ' . $aufid);
         if (!is_array($data)) {
             http_response_code(404);
-            echo "Resource not found for aufid";
+            echo $lng->getText('http_404');
             exit(404);
         }
 
         if (trim($data['wartzeit'])) {
             http_response_code(410);
-            echo "Gone: The resource no longer available";
+            echo $lng->getText('http_410');
             exit(410);
         }
 
@@ -56,17 +56,17 @@ if (isset($_POST['aufid'])) {
         if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\', mailzust=\'3\' WHERE aufid = '.$aufid)) {
             // Done
             http_response_code(201);
-            echo "Added successfully.";
+            echo $lng->getText('http_201');
             exit(201);
 
         } else {
             http_response_code(500);
-            echo "Internal Server Error: SQL Execution. ID: ".$sqlMGR->lastErrno." Msg: ".$sqlMGR->lastError;
+            echo $lng->getText('http_500') . " ID: ".$sqlMGR->lastErrno." Msg: ".$sqlMGR->lastError;
             exit(500);
         }
     } else {
         http_response_code(400);
-        echo "Bad Request: wartdatum or wartzeit is missing.";
+        echo $lng->getText('http_400');
         exit(400);
     }
 }
