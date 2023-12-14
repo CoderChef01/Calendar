@@ -32,7 +32,13 @@ class SQLMgr {
 
     public function getRow ($query) {
         if ($this->connection){
-            $query = mysqli_query($this->connection, $query);
+            try {
+                $query = mysqli_query($this->connection, $query);
+            } catch (Exception $exception) {
+                $this->lastErrno = mysqli_errno($this->connection);
+                $this->lastError = mysqli_error($this->connection);
+                return false;
+            }
             if (!$query) {
                 $this->lastErrno = mysqli_errno($this->connection);
                 $this->lastError = mysqli_error($this->connection);
@@ -49,13 +55,19 @@ class SQLMgr {
     public function get ($query) {
         $array = array();
         if ($this->connection) {
-            $query = mysqli_query($this->connection, $query);
+            try {
+                $query = mysqli_query($this->connection, $query);
+            } catch (Exception $exception) {
+                $this->lastErrno = mysqli_errno($this->connection);
+                $this->lastError = mysqli_error($this->connection);
+                return $array;
+            }
             if (!$query) {
                 $this->lastErrno = mysqli_errno($this->connection);
                 $this->lastError = mysqli_error($this->connection);
-                return false;
+                return $array;
             }
-            if ($query === true){
+            if ($query === true) {
                 return true;
             }
             while ($row = mysqli_fetch_array($query, MYSQLI_ASSOC))
