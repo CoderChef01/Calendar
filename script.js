@@ -279,8 +279,6 @@ function populateBTCalendar(year, month) {
                 const div = document.createElement('div');
                 div.innerHTML = currentDay.toString();
 
-                currentDay++;
-
                 if (isDayClickable(year, month, currentDay)) {
                     div.classList.add('clickable');
                     div.onclick = ()=>{
@@ -290,7 +288,9 @@ function populateBTCalendar(year, month) {
                     div.classList.add('disabled');
                 }
                 calendar_content.appendChild(div);
-
+                currentDay++;
+            } else {
+                calendar_content.appendChild(createDiv('blank'))
             }
         }
     }
@@ -298,6 +298,7 @@ function populateBTCalendar(year, month) {
 
 function isDayClickable(year, month, day) {
     let currentDay = new Date(year, month - 1, day);
+    console.info(currentDay);
     let dayOfWeek = currentDay.getDay();
     return dayOfWeek !== 0 && dayOfWeek !== 6;
 }

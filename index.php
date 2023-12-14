@@ -167,7 +167,7 @@ if ($aufid) {
                     <div><?php $lng->echoText('th'); ?></div>
                     <div><?php $lng->echoText('fr'); ?></div>
                     <div class="weekend"><?php $lng->echoText('sa'); ?></div>
-                    <div class="weekend"><?php $lng->echoText('so'); ?></div>
+                    <div class="weekend"><?php $lng->echoText('su'); ?></div>
                 </div>
                 <div class="calendar_content">
                     <!-- Inhalt des Kalenders -->
