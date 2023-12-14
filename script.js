@@ -306,10 +306,13 @@ function getTodayClass(year, month, day) {
     const dayOfWeek = currentDay.getDay();
     const isWeekday = dayOfWeek !== 0 && dayOfWeek !== 6;
     const isBefore = currentDay <= dateTo;
+    const selectedDayShift = calendarData.monteuren[calendarData.monteur][dayOfWeek];
 
-    if (isWeekday && isBefore) {
+    if (isWeekday && isBefore && selectedDayShift) {
         return 'clickable';
     } else if (isWeekday && !isBefore) {
+        return 'disabled';
+    }  else if (isWeekday && !selectedDayShift) {
         return 'disabled';
     } else if (!isWeekday) {
         return 'week_end';
