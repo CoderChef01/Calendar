@@ -35,3 +35,7 @@ Der Code des Projekts ist gut strukturiert und leicht verständlich. Die Verantw
 - Befüllung des Kalenders mit den entsprechenden Tagen.
 - Anzeige der Zeitfenster für den ausgewählten Tag.
 - Anzeige der verfügbaren Zeitfenster für den ausgewählten Tag.
+
+
+## Roadmap
+- 

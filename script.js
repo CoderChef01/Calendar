@@ -6,7 +6,9 @@ const CONSTANTS = {
     },
     now: new Date(),
     workLength: 90,
-    timeSteps: 15
+    timeSteps: 15,
+    freeDays: Array.isArray(calendarData.feiertags) ?
+        calendarData.feiertags.map(string => new Date(string)) : []
 }
 
 const LNG = {
@@ -303,14 +305,27 @@ function isDayClickable(year, month, day) {
 function getTodayClass(year, month, day) {
     const currentDay = new Date(year, month - 1, day);
     const dateTo = new Date(calendarData.date_to);
+    const dateFrom = new Date(calendarData.date_from);
+    dateFrom.setHours(0);
     const dayOfWeek = currentDay.getDay();
     const isWeekday = dayOfWeek !== 0 && dayOfWeek !== 6;
     const isBefore = currentDay <= dateTo;
+    const isAfter = currentDay >= dateFrom;
+    const selectedDayShift = calendarData.monteuren[calendarData.monteur][dayOfWeek];
+    const isFreeDay = CONSTANTS.freeDays.find(date=> {
+        return date.getFullYear() === currentDay.getFullYear() &&
+            date.getMonth() === currentDay.getMonth() &&
+            date.getDate() === currentDay.getDate();
+    });
 
-    if (isWeekday && isBefore) {
+    if (isWeekday && isBefore && selectedDayShift && !isFreeDay && isAfter) {
         return 'clickable';
-    } else if (isWeekday && !isBefore) {
+    } else if (isWeekday && (!isBefore || !isAfter)) {
         return 'disabled';
+    } else if (isWeekday && !selectedDayShift) {
+        return 'disabled';
+    } else if (isWeekday && isFreeDay) {
+        return 'week_end';
     } else if (!isWeekday) {
         return 'week_end';
     }
@@ -421,8 +436,32 @@ function showTimeSlotsModal(year, month, day) {
     // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
     // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
     const todaySlots = getBookedSlotsForDay(year, month, day);
-    const availableTimeSlotsDe = generateTimeSlots(todaySlots, ['7:00', '12:00']);
-    const availableTimeSlotsDu = generateTimeSlots(todaySlots, ['13:00', '16:00']);
+    const currentDay = new Date(year, month - 1, day);
+    const dayOfWeek = currentDay.getDay();
+    const selectedDayShift = calendarData.monteuren[calendarData.monteur][dayOfWeek];
+    let availableTimeSlotsDe = [],
+        availableTimeSlotsDu = [];
+
+    if (Array.isArray(selectedDayShift) && selectedDayShift.length > 1) {
+        const dates = [getTimedDate(selectedDayShift[0]), getTimedDate(selectedDayShift[1])];
+        addMinutes(dates[1], -1 * CONSTANTS.workLength);
+        const startHour = Number(selectedDayShift[0].split(':')[0]),
+            endHour = Number(getTimeFromDate(dates[1]).split(':')[0]);
+        addMinutes(dates[1], CONSTANTS.timeSteps);
+
+        if (startHour <= 12) {
+            availableTimeSlotsDe = generateTimeSlots(todaySlots, [
+                selectedDayShift[0],
+                endHour < 12 ? getTimeFromDate(dates[1]) : '11:45'
+            ]);
+        }
+        if (endHour > 12) {
+            availableTimeSlotsDu = generateTimeSlots(todaySlots, [
+                startHour > 13 ? selectedDayShift[0] : '13:00',
+                getTimeFromDate(dates[1])
+            ]);
+        }
+    }
 
     const timeSlotsModal = document.getElementById('timeSlotsModal');
     if (!timeSlotsModal) {
@@ -537,13 +576,21 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
                     } else if (slotButton) {
                         slotButton.classList.remove('planned');
                     }
-
                 }
             }
             //alert(LNG.getText("selected_period") + ": " + timeSlot.time)
         };
 
         slotsNode.appendChild(button);
+    }
+
+    for (let j = 0; j < 4 - (availableTimeSlots.length % 4); j++) {
+        const div = document.createElement('div');
+        div.style.flex = '1 0 22%';
+        div.style.boxSizing = 'border-box'
+        div.style.margin = '4px'
+        div.style.padding = '2px 8px'
+        slotsNode.appendChild(div);
     }
 
     timeSlotsContainer.appendChild(slotsNode);

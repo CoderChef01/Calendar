@@ -1,6 +1,8 @@
 <?php
 require(__DIR__ . '/lib/lang.php');
 require(__DIR__ . '/lib/sql.php');
+$configs = include(__DIR__ . '/config.php');
+
 $lng = new Lang();
 $sqlMGR = new SQLMgr();
 $aufid = false;
@@ -18,8 +20,22 @@ $globalCalendarData = array(
     'work_length' => '90',
     'wartdatum' => null,
     'wartzeit' => null,
-    'post' => ''
+    'post' => '',
+    'monteur' => 'default',
+    'monteuren'=> $configs['monteuren'],
+    'feiertags' => array()
 );
+
+$freeDayQuery = $sqlMGR->get('SELECT ftdatum as datum FROM `feiertag`');
+if ($freeDayQuery) {
+    foreach ($freeDayQuery as $object) {
+        if (isset($object['datum'])) {
+            $globalCalendarData['feiertags'][] = $object['datum'];
+        }
+    }
+}
+
+
 if (isset($_POST['aufid'])) {
 
     if (!$_POST['aufid']) {
@@ -87,6 +103,8 @@ if ($aufid) {
         $globalCalendarData['date_to'] = $data['wartdatumbis'];
         $globalCalendarData['wartzeit'] = $data['wartzeit'];
         $globalCalendarData['wartdatum'] = $data['wartdatum'];
+        $monteur = $string = str_replace(' ', '', $data['monteur'] ?? 'default');
+        $globalCalendarData['monteur'] = isset($configs['monteuren'][$monteur]) ? $monteur : 'default';
         $globalCalendarData['loaded'] = true;
     }
 }
