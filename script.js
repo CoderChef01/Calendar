@@ -302,8 +302,8 @@ function isDayClickable(year, month, day) {
 
 function getTodayClass(year, month, day) {
     const currentDay = new Date(year, month - 1, day);
-    const dateTo = new Date(calendarData.date_to + 'T18:59:01.000Z');
-    let dayOfWeek = currentDay.getDay();
+    const dateTo = new Date(calendarData.date_to);
+    const dayOfWeek = currentDay.getDay();
     const isWeekday = dayOfWeek !== 0 && dayOfWeek !== 6;
     const isBefore = currentDay <= dateTo;
 
