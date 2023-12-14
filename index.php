@@ -50,8 +50,10 @@ if (isset($_POST['aufid'])) {
 
         $wartdatum = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['wartdatum']);
         $wartzeit = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['wartzeit']);
+        // TODO: Notes are here if you need
+        $notes = mysqli_real_escape_string($sqlMGR->getConnection(), isset($_POST['notes']) ? $_POST['notes'] : '');
         // We can proceed
-        if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\' WHERE aufid = '.$aufid)) {
+        if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\', mailzust=\'3\' WHERE aufid = '.$aufid)) {
             // Done
             http_response_code(201);
             echo "Added successfully.";
@@ -159,13 +161,13 @@ if ($aufid) {
                     <button id="nextMonthBtn" class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
                 </div>
                 <div class="calendar_weekdays">
-                    <div><?php $lng->getText('mo'); ?></div>
-                    <div><?php $lng->getText('tu'); ?></div>
-                    <div><?php $lng->getText('we'); ?></div>
-                    <div><?php $lng->getText('th'); ?></div>
-                    <div><?php $lng->getText('fr'); ?></div>
-                    <div class="weekend"><?php $lng->getText('sa'); ?></div>
-                    <div class="weekend"><?php $lng->getText('so'); ?></div>
+                    <div><?php $lng->echoText('mo'); ?></div>
+                    <div><?php $lng->echoText('tu'); ?></div>
+                    <div><?php $lng->echoText('we'); ?></div>
+                    <div><?php $lng->echoText('th'); ?></div>
+                    <div><?php $lng->echoText('fr'); ?></div>
+                    <div class="weekend"><?php $lng->echoText('sa'); ?></div>
+                    <div class="weekend"><?php $lng->echoText('so'); ?></div>
                 </div>
                 <div class="calendar_content">
                     <!-- Inhalt des Kalenders -->

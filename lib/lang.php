@@ -17,13 +17,14 @@ class Lang
         if (isset($_GET['language']) && $_GET['language']) {
             $lang = trim(stripcslashes($_GET['language']));
         } else {
-            $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+            // TODO: Detect browser language?
+            // $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
         }
-        if (!$lang) {
-            $lang = 'en';
+        if (!isset($lang) || !$lang) {
+            $lang = 'de';
         }
 
-        $this->language = in_array($lang, $this->accepted) ? $lang : 'en';
+        $this->language = in_array($lang, $this->accepted) ? $lang : 'de';
 
         $this->translations = $this->loadLanguage() ?? array();
     }
