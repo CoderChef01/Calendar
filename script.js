@@ -652,7 +652,8 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
                         wartzeit: selectedTime,
                         wartdatum: year + "-" + month + "-" + day,
                         notes: notes.value,
-                        aufid: window.calendarData.aufid
+                        aufid: window.calendarData.aufid,
+                        lid: window.calendarData.lid,
                     })
                 }
             }, {
@@ -675,6 +676,7 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
  * @property {string} wartdatum
  * @property {string} wartzeit
  * @property {string} aufid
+ * @property {string} lid
  */
 
 /**
