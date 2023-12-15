@@ -6,6 +6,7 @@ $configs = include(__DIR__ . '/config.php');
 $lng = new Lang();
 $sqlMGR = new SQLMgr();
 $aufid = false;
+$lid = false;
 
 $bookings = $sqlMGR->get('SELECT `wartdatum`, `wartzeit` FROM `kunden`');
 
@@ -36,22 +37,22 @@ if ($freeDayQuery) {
 }
 
 
-if (isset($_POST['aufid'])) {
+if (isset($_POST['lid'])) {
 
-    if (!$_POST['aufid']) {
+    if (!$_POST['lid']) {
         http_response_code(400);
         echo $lng->getText('http_400');
         exit(400);
     }
 
     if(isset($_POST['wartdatum']) && isset($_POST['wartzeit'])) {
-        $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['aufid']);
-        if (!$aufid || $aufid === 'undefined') {
+        $lid = mysqli_real_escape_string($sqlMGR->getConnection(), $_POST['lid']);
+        if (!$lid || $lid === 'undefined') {
             http_response_code(400);
             echo $lng->getText('http_400');
             exit(400);
         }
-        $data = $sqlMGR->getRow('SELECT aufid, wartdatum, wartzeit FROM `kunden` WHERE aufid = ' . $aufid);
+        $data = $sqlMGR->getRow('SELECT aufid, lid, wartdatum, wartzeit FROM `kunden` WHERE lid = ' . $lid);
         if (!is_array($data)) {
             http_response_code(404);
             echo $lng->getText('http_404');
@@ -69,7 +70,7 @@ if (isset($_POST['aufid'])) {
         // TODO: Notes are here if you need
         $notes = mysqli_real_escape_string($sqlMGR->getConnection(), isset($_POST['notes']) ? $_POST['notes'] : '');
         // We can proceed
-        if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\', mailzust=\'3\' WHERE aufid = '.$aufid)) {
+        if ($sqlMGR->getRow('UPDATE `kunden` SET wartdatum=\''.$wartdatum.'\', wartzeit=\''.$wartzeit.'\', mailzust=\'3\' WHERE lid = '.$lid)) {
             // Done
             http_response_code(201);
             echo $lng->getText('http_201');
@@ -91,24 +92,32 @@ if (isset($_GET['aufid']) && $_GET['aufid']) {
     $aufid = mysqli_real_escape_string($sqlMGR->getConnection(), $_GET['aufid']);
 }
 
-if ($aufid) {
-    $globalCalendarData['aufid'] = $aufid;
-    $data = $sqlMGR->getRow('SELECT * FROM `kunden` WHERE aufid = ' .
-        mysqli_real_escape_string($sqlMGR->getConnection(), $_GET['aufid']));
-
-    if (is_array($data)) {
-        $globalCalendarData['client'] = $data['kuname'];
-        $globalCalendarData['subject'] = $data['objekt'];
-        $globalCalendarData['date_from'] = $data['wartdatumvon'];
-        $globalCalendarData['date_to'] = $data['wartdatumbis'];
-        $globalCalendarData['wartzeit'] = $data['wartzeit'];
-        $globalCalendarData['wartdatum'] = $data['wartdatum'];
-        $monteur = $string = str_replace(' ', '', $data['monteur'] ?? 'default');
-        $globalCalendarData['monteur'] = isset($configs['monteuren'][$monteur]) ? $monteur : 'default';
-        $globalCalendarData['loaded'] = true;
-    }
+if (isset($_GET['lid']) && $_GET['lid']) {
+    $lid = mysqli_real_escape_string($sqlMGR->getConnection(), $_GET['lid']);
 }
 
+$data = null;
+if ($aufid) {
+    $data = $sqlMGR->getRow('SELECT * FROM `kunden` WHERE aufid = ' .
+        mysqli_real_escape_string($sqlMGR->getConnection(), $aufid));
+}
+if ($lid) {
+    $data = $sqlMGR->getRow('SELECT * FROM `kunden` WHERE lid = ' .
+        mysqli_real_escape_string($sqlMGR->getConnection(), $lid));
+}
+if (is_array($data)) {
+    $globalCalendarData['client'] = $data['kuname'];
+    $globalCalendarData['lid'] = $data['lid'];
+    $globalCalendarData['aufid'] = $data['aufid'];
+    $globalCalendarData['subject'] = $data['objekt'];
+    $globalCalendarData['date_from'] = $data['wartdatumvon'];
+    $globalCalendarData['date_to'] = $data['wartdatumbis'];
+    $globalCalendarData['wartzeit'] = $data['wartzeit'];
+    $globalCalendarData['wartdatum'] = $data['wartdatum'];
+    $monteur = $string = str_replace(' ', '', $data['monteur'] ?? 'default');
+    $globalCalendarData['monteur'] = isset($configs['monteuren'][$monteur]) ? $monteur : 'default';
+    $globalCalendarData['loaded'] = true;
+}
  $kuname = "Ügyfél neve";
  $objekt = "Objekt";
  $wartdatumvon = "idő kezdete";
