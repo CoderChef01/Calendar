@@ -138,6 +138,7 @@ if (is_array($data)) {
     <script type="application/javascript">
         /**
          * Global Data from SQL
+         * @type {CalendarData}
          */
         window.calendarData = <?php echo json_encode($globalCalendarData); ?>;
     </script>
