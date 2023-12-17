@@ -36,5 +36,6 @@
   "http_404": "Resource not found for aufid",
   "http_410": "Gone: Booking is already saved with this URL",
   "http_201": "Added successfully.",
-  "http_500": "Internal Server Error: SQL Execution."
+  "http_500": "Internal Server Error: SQL Execution.",
+  "confirmation": "Confirmation"
 }

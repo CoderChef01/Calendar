@@ -1,3 +1,65 @@
+/**
+ * @typedef {Object} TimeSlot
+ * @property {boolean} booked = Is it booked
+ * @property {string} time -
+ * @property {number} size -
+ */
+
+
+/**
+ * @typedef {Object} BookingData
+ * @property {string} wartdatum
+ * @property {string} wartzeit
+ * @property {string} aufid
+ * @property {string} lid
+ */
+
+
+/**
+ * @typedef {(null|string[])[]} WorkingGroup
+ */
+
+
+/**
+ * @typedef {Object} CalendarData
+ * @property {BookingData} bookings
+ * @property {Object<string>} translations
+ * @property {boolean} loaded
+ * @property {string} client
+ * @property {string} subject
+ * @property {string} date_from
+ * @property {string} date_to
+ * @property {string} work_length
+ * @property {string|null} wartdatum
+ * @property {string|null} wartzeit
+ * @property {string|undefined} aufid
+ * @property {string|undefined} lid
+ * @property {string} post - Deprecated value
+ * @property {'default'|'Monteur1'|'Monteur2'|'Kessel1'|'Kessel2'} monteur
+ * @property {Object<WorkingGroup>} monteuren
+ * @property {string[]} feiertags
+ */
+
+
+/**
+ * @typedef {Object} ModalButton
+ * @property {undefined|string} innerHTML
+ * @property {undefined|string} value
+ * @property {undefined|string} text
+ * @property {undefined|string} className
+ * @property {undefined|function} onclick
+ */
+
+
+/**
+ * @typedef {Object} ModalConfig
+ * @property {string|undefined} title
+ * @property {string|undefined|Node|HTMLElement} body
+ * @property {undefined|(ModalButton|string)[]} buttons
+ */
+
+
+
 let currentDate = new Date();
 const CONSTANTS = {
     offsets: {
@@ -12,17 +74,14 @@ const CONSTANTS = {
 }
 
 const LNG = {
+    /**
+     * @param {string} text
+     * @returns {string}
+     */
     getText: (text) => window.calendarData && window.calendarData.translations &&
         window.calendarData.translations[text] ?
-        window.calendarData.translations[text] : text,
-    echoText: (text) => document.write(this.getText(text))
+        window.calendarData.translations[text] : text
 }
-/**
- * @typedef {Object} TimeSlot
- * @property {boolean} booked = Is it booked
- * @property {string} time -
- * @property {number} size -
- */
 
 /**
  * moveDateByMonth
@@ -39,6 +98,11 @@ function moveDateByMonth (offset) {
 }
 
 let currentModals = [];
+
+/**
+ *
+ * @param {HTMLElement} node
+ */
 function showModalFor(node) {
     if(!node) {
         return;
@@ -97,6 +161,12 @@ document.body.onclick = (e) => {
     }
 }
 
+
+
+/**
+ *
+ * @param options
+ */
 function BSModal (options) {
     if (!options) options = {};
     let mainModal = document.querySelector('#bsModal');
@@ -232,6 +302,10 @@ function updateCalendar() {
     populateBTCalendar(year, month);
 }
 
+/**
+ * @param {number} year
+ * @param {number} month
+ */
 function populateBTCalendar(year, month) {
     const calendar_content = document.querySelector('.calendar_content');
     if(!calendar_content) {
@@ -266,7 +340,7 @@ function populateBTCalendar(year, month) {
 
                 if (className === 'clickable') {
                     todayDiv.onclick = ()=>{
-                        showTimeSlotsModal(year, month, dayString);
+                        showTimeSlotsModal(year, month, Number(dayString));
                     }
                 }
                 calendar_content.appendChild(todayDiv);
@@ -284,7 +358,7 @@ function populateBTCalendar(year, month) {
 
                 if (className === 'clickable') {
                     div.onclick = ()=>{
-                        showTimeSlotsModal(year, month, dayString);
+                        showTimeSlotsModal(year, month, Number(dayString));
                     }
                 }
                 calendar_content.appendChild(div);
@@ -296,12 +370,14 @@ function populateBTCalendar(year, month) {
     }
 }
 
-function isDayClickable(year, month, day) {
-    let currentDay = new Date(year, month - 1, day);
-    let dayOfWeek = currentDay.getDay();
-    return dayOfWeek !== 0 && dayOfWeek !== 6;
-}
 
+/**
+ *
+ * @param {number} year
+ * @param {number} month
+ * @param {number} day
+ * @returns {string}
+ */
 function getTodayClass(year, month, day) {
     const currentDay = new Date(year, month - 1, day);
     const dateTo = new Date(calendarData.date_to);
@@ -362,10 +438,19 @@ function getTimeFromDate (date) {
     return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
 }
 
+/**
+ * @param {number} year
+ * @param {number} month
+ * @param {number} day
+ * @returns {string[]}
+ */
 function getBookedSlotsForDay (year, month, day) {
     const bookingArray = window.calendarData.bookings || [];
     const todayData = bookingArray.filter(booking => booking.wartdatum === year + "-" + month + "-" + day);
 
+    /**
+     * @type {string[]}
+     */
     const slots = [];
 
     todayData.forEach(function (booking) {
@@ -393,7 +478,7 @@ function getBookedSlotsForDay (year, month, day) {
 /**
  * generateTimeSlots
  * @param {string[]} bookedSlots - All currently booked 1.5 hour slots
- * @param {string[]} shift - The current work shift, for example ['8:00', '12:00']
+ * @param {string[]} shift - The current work shift, for example ['8:00', '12:00 ']
  * @returns {TimeSlot[]}
  */
 function generateTimeSlots (bookedSlots, shift) {
@@ -432,9 +517,13 @@ function generateTimeSlots (bookedSlots, shift) {
     return slots;
 }
 
+
+/**
+ * @param {number} year
+ * @param {number} month
+ * @param {number} day
+ */
 function showTimeSlotsModal(year, month, day) {
-    // Implementieren Sie die Logik zum Abrufen verfügbarer Zeitfenster für den ausgewählten Tag aus Ihrer Datenbank
-    // Lassen Sie uns vorerst davon ausgehen, dass wir ein Array verfügbarer Zeitfenster haben
     const todaySlots = getBookedSlotsForDay(year, month, day);
     const currentDay = new Date(year, month - 1, day);
     const dayOfWeek = currentDay.getDay();
@@ -488,15 +577,6 @@ function showTimeSlotsModal(year, month, day) {
     duButton.onclick = ()=> showAvailableTimeSlots("du", availableTimeSlotsDu, year, month, day);
 
 
-
-    /*const title = document.createElement('h5');
-    title.className = "modal-title text-center";
-    title.innerHTML = "Welcher Zeitraum passt Ihnen?";*/
-
-    // Fügen Sie den Titel zum Modal hinzu
-    // modal.appendChild(title);
-
-    // Erstellen Sie einen Container für die Zeitraumtyp-Buttons
     const timeTypeContainer = document.createElement('div');
     timeTypeContainer.className = "time-type d-flex justify-content-between buttons";
     timeTypeContainer.appendChild(deButton);
@@ -504,7 +584,6 @@ function showTimeSlotsModal(year, month, day) {
 
     modal.appendChild(timeTypeContainer);
 
-    // Erstellen Sie einen Container für die Zeitfenster
     const timeSlotsContainer = document.createElement('div');
     timeSlotsContainer.id = "timeSlotsContainer";
     modal.appendChild(timeSlotsContainer);
@@ -514,18 +593,18 @@ function showTimeSlotsModal(year, month, day) {
 
 
 /**
- *
  * @param {'de'|'du'} timeType - Current Type of the Time
  * @param {TimeSlot[]} availableTimeSlots - List of available time slots for the calendar
+ * @param {number} year
+ * @param {number} month
+ * @param {number} day
  */
 function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) {
-    // Holen Sie sich den Container für die Zeitfenster
     const timeSlotsContainer = document.getElementById('timeSlotsContainer');
     if (!timeSlotsContainer) {
         console.error('#timeSlotsContainer is not found in DOM');
         return;
     }
-    // Leeren Sie den Container
     timeSlotsContainer.innerHTML = '';
 
     const slotsNode = document.createElement('div');
@@ -539,7 +618,7 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
     }
     const maintenance_time = getSummaryLine(LNG.getText('maintenance_time') + ':', '07:30 - 09:00');
     let selectedTime;
-    // Zeigen Sie die gefilterten Zeitfenster an
+
     for (let i = 0; i < availableTimeSlots.length; i++) {
         const timeSlot = availableTimeSlots[i];
         const button = document.createElement('button');
@@ -605,7 +684,6 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
     noteContainer.appendChild(notes);
     timeSlotsContainer.appendChild(noteContainer);
 
-    // Fügen Sie eine leere div für den Abstand hinzu
     const spacerDiv = document.createElement('div');
     spacerDiv.style.height = "1em";
     timeSlotsContainer.appendChild(spacerDiv);
@@ -625,13 +703,11 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
     buttons.classList.add('buttons-wrapper');
 
 
-    // Fügen Sie den "Akzeptieren" Button hinzu
     const acceptButton = document.createElement('button');
     acceptButton.className = "btn btn-secondary";
     acceptButton.innerHTML = LNG.getText('back');
     acceptButton.onclick = ()=>alert(LNG.getText('cancelled'));
 
-    // Fügen Sie den "Akzeptieren" Button hinzu
     const backButton = document.createElement('button');
     backButton.className = "btn btn-primary";
     backButton.innerHTML = LNG.getText('book');
@@ -640,9 +716,8 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
             alert(LNG.getText('please_select'));
             return;
         }
-        //alert(LNG.getText('accepted'))
         const modalConfig = {
-            title: 'Confirmation',
+            title: LNG.getText('confirmation'),
             body: LNG.getText('are_you_sure'),
             buttons: [{
                 innerHTML: LNG.getText('yes'),
@@ -665,22 +740,13 @@ function showAvailableTimeSlots(timeType, availableTimeSlots, year, month, day) 
 
     };
 
-    // Fügen Sie den Akzeptieren Button dem Container hinzu
     buttons.appendChild(acceptButton);
     buttons.appendChild(backButton);
     timeSlotsContainer.appendChild(buttons);
 }
 
-/**
- * @typedef {Object} BookingData
- * @property {string} wartdatum
- * @property {string} wartzeit
- * @property {string} aufid
- * @property {string} lid
- */
 
 /**
- * books
  * @param {BookingData} data
  */
 function book (data) {
